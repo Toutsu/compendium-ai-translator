@@ -38,7 +38,7 @@
 
 ### Требования
 
-- **Foundry VTT** версии 11 или выше
+- **Foundry VTT** версии 12 или выше
 - **Babele** модуль (обязательно)
 - **pf2e-ru** модуль (опционально, для словаря терминов)
 
@@ -123,7 +123,7 @@
 
 ### Requirements
 
-- **Foundry VTT** version 11 or higher
+- **Foundry VTT** version 12 or higher
 - **Babele** module (required)
 - **pf2e-ru** module (optional, for term dictionary)
 
