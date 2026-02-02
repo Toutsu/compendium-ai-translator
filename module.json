@@ -32,11 +32,14 @@
     },
     "esmodules": [
         "scripts/main.js",
-        "scripts/TranslationService.js",
+        "scripts/FieldMapper.js",
         "scripts/EntityExtractor.js",
+        "scripts/TranslationService.js",
         "scripts/BabeleGenerator.js",
         "scripts/TranslationUI.js",
-        "scripts/FieldMapper.js"
+        "scripts/DictionaryLoader.js",
+        "scripts/TermReplacer.js",
+        "scripts/PromptGenerator.js"
     ],
     "styles": [
         "styles/translator.css"
