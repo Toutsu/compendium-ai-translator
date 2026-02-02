@@ -206,7 +206,7 @@ Created with ❤️ for the Foundry VTT community.
 Special thanks to:
 - **Babele** module by Simone Ricciardi for the translation framework
 - **pf2e-ru** team for official Russian translations
-- **pf2e-ru-ai-translator** by Phil and Toutsu for workflow inspiration
+- **Phil-pf2e-ai-translator** by Phil for workflow inspiration
 
 ## Support
 
