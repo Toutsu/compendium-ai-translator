@@ -24,3 +24,6 @@ translations/*.json
 # Ignore logs
 *.log
 npm-debug.log*
+
+# Test plan (local only)
+TESTPLAN.md
