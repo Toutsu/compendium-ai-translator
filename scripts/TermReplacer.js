@@ -1,0 +1,123 @@
+/**
+ * TermReplacer - Replaces English terms with Russian equivalents
+ * Protects HTML tags, Foundry links, and inline rolls
+ * Adapted from pf2e-ru-ai-translator
+ */
+export class TermReplacer {
+    static _regexCache = null;
+    static _lookupCache = null;
+    static _lastDictionary = null;
+
+    /**
+     * Replaces terms in the text with their values from the dictionary.
+     * Respects HTML tags (does not replace inside tags).
+     * @param {string} text - The input text (potentially HTML).
+     * @param {Object} dictionary - Map of terms to replace (English -> Russian).
+     * @param {boolean} [appendOriginal=false] - If true, appends the original term: "Translation %%Original%%".
+     * @returns {{text: string, replaced: Array<{original: string, translation: string}>}} The text with terms replaced and list of replacements.
+     */
+    static replaceTerms(text, dictionary, appendOriginal = false) {
+        if (!text || !dictionary) return { text: text, replaced: [] };
+
+        // Check if we can reuse the cached regex and lookup
+        if (this._lastDictionary !== dictionary || !this._regexCache || !this._lookupCache) {
+            const keys = Object.keys(dictionary).sort((a, b) => b.length - a.length);
+            if (keys.length === 0) return { text: text, replaced: [] };
+
+            const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const pattern = keys.map(escapeRegExp).join("|");
+
+            // Construct a regex that matches any of the terms as whole words.
+            // We use lookbehind (?<!\\w) and lookahead (?!\\w) instead of \\b to handle terms starting with symbols like "+1".
+            this._regexCache = new RegExp(`(?<!\\w)(${pattern})(?!\\w)`, 'gi');
+
+            // Create a lowercase lookup map to handle case-insensitive matches
+            this._lookupCache = {};
+            for (const [key, value] of Object.entries(dictionary)) {
+                this._lookupCache[key.toLowerCase()] = { original: key, translation: value };
+            }
+
+            this._lastDictionary = dictionary;
+        }
+
+        const replacedTerms = new Map(); // Use Map to track unique replacements by original term
+
+        // PROTECTION REGEX:
+        // 1. HTML Tags: <...>
+        // 2. Foundry Links: @Tag[...] or @Tag[...]{...}
+        // 3. Inline Rolls/Macros: [[...]]
+        // We use capturing groups to include the separators in the split result.
+        const protectionRegex = /((?:<[^>]+>)|(?:@[a-zA-Z0-9]+\[[^\]]*\](?:\{[^}]*\})?)|(?:\[\[.*?\]\]))/g;
+
+        const parts = text.split(protectionRegex);
+
+        const newText = parts.map((part, index) => {
+            // Odd indices in split results with capturing regex are the separators (the protected parts)
+            if (index % 2 === 1) return part;
+
+            // Replace terms in the text content
+            return part.replace(this._regexCache, (match) => {
+                // Look up the translation using the lowercase match
+                const entry = this._lookupCache[match.toLowerCase()];
+                if (entry) {
+                    replacedTerms.set(entry.original, entry.translation);
+                    if (appendOriginal) {
+                        return `${entry.translation} %%${entry.original}%%`;
+                    }
+                    return entry.translation;
+                }
+                return match;
+            });
+        }).join("");
+
+        const replacedList = Array.from(replacedTerms.entries()).map(([original, translation]) => ({ original, translation }));
+        return { text: newText, replaced: replacedList };
+    }
+
+    /**
+     * Clear the regex cache (useful when dictionary changes)
+     */
+    static clearCache() {
+        this._regexCache = null;
+        this._lookupCache = null;
+        this._lastDictionary = null;
+    }
+
+    /**
+     * Process multiple entities with term replacement
+     * @param {Array} entities - Array of entity data
+     * @param {Object} dictionary - Translation dictionary
+     * @returns {Array} Entities with replaced terms and replacement stats
+     */
+    static processEntities(entities, dictionary) {
+        const results = [];
+        const allReplacements = new Map();
+
+        for (const entity of entities) {
+            const processedEntity = { ...entity };
+            const entityReplacements = [];
+
+            // Process each translatable field
+            for (const [fieldPath, fieldValue] of Object.entries(entity.translatableFields)) {
+                if (typeof fieldValue === 'string') {
+                    const result = this.replaceTerms(fieldValue, dictionary);
+                    processedEntity.translatableFields[fieldPath] = result.text;
+
+                    // Track replacements
+                    for (const replacement of result.replaced) {
+                        entityReplacements.push({ field: fieldPath, ...replacement });
+                        allReplacements.set(replacement.original, replacement.translation);
+                    }
+                }
+            }
+
+            processedEntity.replacements = entityReplacements;
+            results.push(processedEntity);
+        }
+
+        return {
+            entities: results,
+            totalReplacements: Array.from(allReplacements.entries()).map(([original, translation]) => ({ original, translation }))
+        };
+    }
+}

@@ -1,8 +1,57 @@
 <form class="compendium-translator-form">
+    {{!-- Header Section --}}
+    <div class="header-section">
+        <h2>{{localize "COMPENDIUM_TRANSLATOR.Title"}}</h2>
+        <button type="button" class="toggle-mode" title="Toggle API Mode">
+            {{#if useDirectAPI}}
+            <i class="fas fa-keyboard"></i> Copy-Paste Mode
+            {{else}}
+            <i class="fas fa-robot"></i> Direct API Mode
+            {{/if}}
+        </button>
+    </div>
+
+    {{!-- Dictionary Section --}}
+    {{#unless useDirectAPI}}
+    <div class="dictionary-section">
+        <h3><i class="fas fa-book"></i> Dictionary</h3>
+
+        {{#if isPF2eRuAvailable}}
+        <div class="dictionary-controls">
+            <button type="button" class="load-dictionary">
+                <i class="fas fa-download"></i> Load pf2e-ru Terms
+            </button>
+            {{#if dictionary.loaded}}
+            <button type="button" class="clear-dictionary">
+                <i class="fas fa-trash"></i> Clear
+            </button>
+            {{/if}}
+        </div>
+
+        {{#if dictionary.loaded}}
+        <div class="dictionary-stats">
+            <p><strong>✓ Loaded:</strong> {{dictionary.count}} terms</p>
+            <details>
+                <summary>Sample terms...</summary>
+                <ul class="term-samples">
+                    {{#each dictionary.sample}}
+                    <li><code>{{this.[0]}}</code> → {{this.[1]}}</li>
+                    {{/each}}
+                </ul>
+            </details>
+        </div>
+        {{/if}}
+        {{else}}
+        <p class="warning"><i class="fas fa-exclamation-triangle"></i> pf2e-ru module not detected</p>
+        {{/if}}
+    </div>
+    {{/unless}}
+
+    {{!-- Compendium Selection --}}
     <div class="form-group">
         <label>{{localize "COMPENDIUM_TRANSLATOR.UI.SelectCompendium"}}</label>
-        <select name="compendium" {{#if translating}}disabled{{/if}}>
-            <option value="">-- {{localize "COMPENDIUM_TRANSLATOR.UI.SelectCompendium"}} --</option>
+        <select name="compendium">
+            <option value="">-- Select Compendium --</option>
             {{#each compendiums}}
             <option value="{{this.id}}" {{#if (eq this.id ../selectedCompendium)}}selected{{/if}}>
                 {{this.label}} ({{this.type}})
@@ -12,21 +61,23 @@
         <div class="compendium-info"></div>
     </div>
 
+    {{!-- Entity Type Filter --}}
     <div class="form-group">
         <label>{{localize "COMPENDIUM_TRANSLATOR.UI.SelectEntityType"}}</label>
-        <select name="entityType" {{#if translating}}disabled{{/if}}>
-            <option value="">{{localize "COMPENDIUM_TRANSLATOR.UI.AllTypes"}}</option>
+        <select name="entityType">
+            <option value="">All Types</option>
             {{#each entityTypes}}
             <option value="{{this}}" {{#if (eq this ../entityTypeFilter)}}selected{{/if}}>
-                {{localize (concat "COMPENDIUM_TRANSLATOR.UI.EntityTypes." this)}}
+                {{this}}
             </option>
             {{/each}}
         </select>
     </div>
 
+    {{!-- Provider Selection (for reference) --}}
     <div class="form-group">
-        <label>{{localize "COMPENDIUM_TRANSLATOR.Settings.AIProvider.Name"}}</label>
-        <select name="provider" {{#if translating}}disabled{{/if}}>
+        <label>AI Provider (for reference)</label>
+        <select name="provider">
             {{#each providers}}
             <option value="{{this.id}}" {{#if (eq this.id ../currentProvider)}}selected{{/if}}>
                 {{this.name}}
@@ -35,51 +86,88 @@
         </select>
     </div>
 
-    {{#if translating}}
-    <div class="translation-progress">
-        <h3>{{localize "COMPENDIUM_TRANSLATOR.UI.Progress"}}</h3>
-        <div class="progress-bar">
-            <div class="progress-fill" style="width: {{math progress.current '/' progress.total '*' 100}}%"></div>
+    {{!-- Copy-Paste Workflow --}}
+    {{#unless useDirectAPI}}
+    <div class="workflow-section">
+        <h3>Translation Workflow</h3>
+
+        {{!-- Step 1: Extract --}}
+        <div class="workflow-step">
+            <h4>1. Extract Entities</h4>
+            <button type="button" class="extract-entities">
+                <i class="fas fa-file-export"></i> Extract from Compendium
+            </button>
         </div>
-        <p class="progress-text">
-            {{localize (concat "COMPENDIUM_TRANSLATOR.UI.Status." progress.status)}}
-            {{#if progress.total}}
-            ({{progress.current}} / {{progress.total}})
-            {{/if}}
+
+        {{!-- Step 2: Generate Prompt --}}
+        {{#if (eq progress.status "extracted")}}
+        <div class="workflow-step">
+            <h4>2. Generate Prompt</h4>
+            <button type="button" class="generate-prompt">
+                <i class="fas fa-magic"></i> Generate Translation Prompt
+            </button>
+        </div>
+        {{/if}}
+
+        {{!-- Step 3: Copy Prompt --}}
+        {{#if generatedPrompt}}
+        <div class="workflow-step">
+            <h4>3. Copy to AI</h4>
+            <div class="prompt-preview">
+                <textarea readonly rows="10">{{generatedPrompt}}</textarea>
+            </div>
+            <button type="button" class="copy-prompt">
+                <i class="fas fa-copy"></i> Copy to Clipboard
+            </button>
+            <p class="helper-text">Paste this into Gemini/ChatGPT/Claude, then copy the response below</p>
+        </div>
+
+        {{!-- Step 4: Paste Response --}}
+        <div class="workflow-step">
+            <h4>4. Paste AI Response</h4>
+            <textarea name="ai-response" rows="10" placeholder="Paste the AI's JSON response here..."></textarea>
+            <button type="button" class="process-response">
+                <i class="fas fa-cog"></i> Process Translation
+            </button>
+        </div>
+        {{/if}}
+
+        {{!-- Step 5: Spell-check (optional) --}}
+        {{#if (eq progress.status "complete")}}
+        <div class="workflow-step">
+            <h4>5. Quality Check (Optional)</h4>
+            <button type="button" class="generate-spellcheck">
+                <i class="fas fa-spell-check"></i> Generate Spell-check Prompt
+            </button>
+        </div>
+        {{/if}}
+    </div>
+    {{/unless}}
+
+    {{!-- Progress Indicator --}}
+    {{#unless (eq progress.status "idle")}}
+    <div class="progress-section">
+        <p class="status-text">
+            <i class="fas fa-spinner fa-spin"></i>
+            {{progress.status}}
         </p>
     </div>
-    {{/if}}
+    {{/unless}}
 
-    <div class="form-group button-group">
-        {{#unless translating}}
-        <button type="button" class="start-translation">
-            <i class="fas fa-play"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.StartTranslation"}}
-        </button>
-        
-        {{#if lastTranslation}}
-        <button type="button" class="export-json">
-            <i class="fas fa-download"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.ExportJSON"}}
-        </button>
-        {{/if}}
-        {{else}}
-        <button type="button" class="cancel-translation">
-            <i class="fas fa-stop"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.CancelTranslation"}}
-        </button>
-        {{/unless}}
-    </div>
-
+    {{!-- Export Section --}}
     {{#if (eq progress.status "complete")}}
-    <div class="success-message">
-        <i class="fas fa-check-circle"></i>
-        <p>Translation complete! The translation has been registered with Babele.</p>
-        <p><small>Click "Export JSON" to save the translation file for distribution.</small></p>
+    <div class="success-section">
+        <p><i class="fas fa-check-circle"></i> Translation complete and registered with Babele!</p>
+        <button type="button" class="export-json">
+            <i class="fas fa-download"></i> Export JSON
+        </button>
     </div>
     {{/if}}
 
+    {{!-- Error Display --}}
     {{#if (eq progress.status "error")}}
-    <div class="error-message">
-        <i class="fas fa-exclamation-triangle"></i>
-        <p>Translation failed. Check console for details.</p>
+    <div class="error-section">
+        <p><i class="fas fa-exclamation-triangle"></i> An error occurred. Check console for details.</p>
     </div>
     {{/if}}
 </form>
