@@ -169,4 +169,4 @@ Special thanks to:
 
 ## Support
 
-For issues and feature requests, please visit the [GitHub repository](https://github.com/yourname/compendium-translator).
+For issues and feature requests, please visit the [GitHub repository](https://github.com/Toutsu/compendium-ai-translator).
