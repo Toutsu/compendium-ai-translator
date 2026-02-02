@@ -1,0 +1,141 @@
+<form class="world-translator-form">
+    {{!-- Entity Type Tabs --}}
+    <div class="entity-type-tabs">
+        {{#each entityTypes}}
+        <button type="button" class="entity-type-tab {{#if (eq this.id ../entityType)}}active{{/if}}"
+            data-type="{{this.id}}">
+            <i class="fas {{this.icon}}"></i> {{this.name}}
+        </button>
+        {{/each}}
+    </div>
+
+    {{!-- Dictionary Section --}}
+    <div class="dictionary-section">
+        <h3><i class="fas fa-book"></i> Dictionary</h3>
+        {{#if isPF2eRuAvailable}}
+        <button type="button" class="load-dictionary">
+            <i class="fas fa-download"></i> Load pf2e-ru Terms
+        </button>
+        {{#if dictionary.loaded}}
+        <span class="dictionary-status">✓ {{dictionary.count}} terms loaded</span>
+        {{/if}}
+        {{else}}
+        <span class="warning">pf2e-ru module not found</span>
+        {{/if}}
+    </div>
+
+    {{!-- Stats --}}
+    <div class="stats-bar">
+        <span>Total: {{stats.total}}</span>
+        <span>Translatable: {{stats.translatable}}</span>
+        <span>Translated: {{stats.translated}}</span>
+        <span>Remaining: {{stats.remaining}}</span>
+    </div>
+
+    {{!-- Entity List --}}
+    <div class="entity-list">
+        <div class="list-header">
+            <label><strong>Select Entities to Translate</strong></label>
+            <div class="list-actions">
+                <button type="button" class="select-all">Select All</button>
+                <button type="button" class="select-untranslated">Select Untranslated</button>
+                <button type="button" class="deselect-all">Deselect All</button>
+            </div>
+        </div>
+
+        <div class="entity-items">
+            {{#each entities}}
+            <div class="entity-item {{#if this.isTranslated}}translated{{/if}}">
+                <label>
+                    <input type="checkbox" class="entity-checkbox" data-id="{{this.id}}" {{#if
+                        this.isSelected}}checked{{/if}}>
+                    <span class="entity-name">{{this.name}}</span>
+                    {{#if this.isTranslated}}
+                    <span class="translated-badge" title="Already translated">✓</span>
+                    <button type="button" class="restore-backup" data-id="{{this.id}}" title="Restore original">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    {{/if}}
+                    <span class="entity-info">{{this.contentPreview}}</span>
+                </label>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
+    {{!-- Workflow Section --}}
+    <div class="workflow-section">
+        {{!-- Step 1: Extract --}}
+        <div class="workflow-step">
+            <h4>1. Extract Content</h4>
+            <button type="button" class="extract-selected" {{#unless hasSelection}}disabled{{/unless}}>
+                <i class="fas fa-file-export"></i> Extract Selected ({{selectedEntities.size}})
+            </button>
+        </div>
+
+        {{!-- Step 2: Generate Prompt --}}
+        {{#if (eq progress.status "extracted")}}
+        <div class="workflow-step">
+            <h4>2. Generate Translation Prompt</h4>
+            <button type="button" class="generate-prompt">
+                <i class="fas fa-magic"></i> Generate Prompt
+            </button>
+        </div>
+        {{/if}}
+
+        {{!-- Step 3: Copy & Paste --}}
+        {{#if generatedPrompt}}
+        <div class="workflow-step">
+            <h4>3. Copy to AI</h4>
+            <div class="prompt-preview">
+                <textarea readonly rows="8">{{generatedPrompt}}</textarea>
+            </div>
+            <button type="button" class="copy-prompt">
+                <i class="fas fa-copy"></i> Copy Prompt
+            </button>
+        </div>
+
+        <div class="workflow-step">
+            <h4>4. Paste AI Response</h4>
+            <textarea name="ai-response" rows="8" placeholder="Paste the AI's JSON response here..."></textarea>
+            <button type="button" class="process-response">
+                <i class="fas fa-cog"></i> Process Response
+            </button>
+        </div>
+        {{/if}}
+
+        {{!-- Step 5: Spell-check (Optional) --}}
+        {{#if (eq progress.status "ready-to-apply")}}
+        <div class="workflow-step">
+            <h4>5. Quality Check (Optional)</h4>
+            <button type="button" class="generate-spellcheck">
+                <i class="fas fa-spell-check"></i> Generate Spell-Check Prompt
+            </button>
+        </div>
+
+        {{!-- Step 6: Apply --}}
+        <div class="workflow-step">
+            <h4>6. Apply Translation</h4>
+            <p class="warning-text"><i class="fas fa-exclamation-triangle"></i> This will modify entities directly.
+                Backups will be saved.</p>
+            <button type="button" class="apply-translation">
+                <i class="fas fa-check"></i> Apply to Entities
+            </button>
+        </div>
+        {{/if}}
+    </div>
+
+    {{!-- Progress --}}
+    {{#unless (eq progress.status "idle")}}
+    <div class="progress-section">
+        <p><i class="fas fa-spinner fa-spin"></i> {{progress.status}}</p>
+    </div>
+    {{/unless}}
+
+    {{!-- Success Message --}}
+    {{#if (eq progress.status "complete")}}
+    <div class="success-section">
+        <p><i class="fas fa-check-circle"></i> Translation applied successfully!</p>
+    </div>
+    {{/if}}
+</form>

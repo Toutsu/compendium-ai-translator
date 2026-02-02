@@ -63,6 +63,26 @@
         },
         "Warnings": {
             "LargeCompendium": "Этот компендиум содержит много сущностей. Перевод может занять время и потребить API кредиты."
+        },
+        "WorldTranslator": {
+            "Title": "Переводчик Сущностей Мира",
+            "TranslateJournals": "AI Перевод",
+            "TranslateActors": "AI Перевод",
+            "TranslateItems": "AI Перевод",
+            "TranslateTables": "AI Перевод",
+            "SelectEntities": "Выберите сущности для перевода",
+            "Extract": "Извлечь контент",
+            "GeneratePrompt": "Сгенерировать промпт",
+            "CopyPrompt": "Копировать промпт",
+            "ProcessResponse": "Обработать ответ",
+            "ApplyTranslation": "Применить перевод",
+            "GenerateSpellcheck": "Промпт для проверки орфографии",
+            "RestoreBackup": "Восстановить оригинал",
+            "SelectAll": "Выбрать все",
+            "DeselectAll": "Снять выбор",
+            "SelectUntranslated": "Выбрать непереведённые",
+            "Translated": "Переведено",
+            "BackupWarning": "Это изменит сущности напрямую. Резервные копии будут сохранены."
         }
     }
 }

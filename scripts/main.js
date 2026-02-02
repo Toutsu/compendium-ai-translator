@@ -1,4 +1,5 @@
 import { TranslationUI, MODULE_ID } from './TranslationUI.js';
+import { WorldTranslationUI } from './WorldTranslationUI.js';
 
 /**
  * Compendium AI Translator - Main Module Entry Point
@@ -96,9 +97,29 @@ Hooks.once('ready', () => {
     }
 });
 
-// Add button to Compendium sidebar
+// Helper function to create translate button
+function createTranslateButton(labelKey, onClick) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.classList.add('ai-translation-btn');
+    button.innerHTML = `<i class="fas fa-language"></i> ${game.i18n.localize(labelKey)}`;
+    button.addEventListener('click', onClick);
+    return button;
+}
+
+// Helper to add button to directory header
+function addButtonToHeader(html, button) {
+    const element = html instanceof HTMLElement ? html : html[0];
+    const headerActions = element.querySelector('.header-actions');
+    if (headerActions) {
+        headerActions.append(button);
+    } else {
+        element.querySelector('.directory-header')?.append(button);
+    }
+}
+
+// Add button to Compendium sidebar (for Babele translation)
 Hooks.on('renderCompendiumDirectory', (app, html) => {
-    // Only show for GMs
     if (!game.user.isGM) return;
 
     const button = $(`
@@ -111,13 +132,60 @@ Hooks.on('renderCompendiumDirectory', (app, html) => {
         new TranslationUI().render(true);
     });
 
-    // Add button to header actions
     const headerActions = html.find('.directory-header .header-actions');
     if (headerActions.length) {
         headerActions.prepend(button);
     } else {
         html.find('.directory-header').append(button);
     }
+});
+
+// Add button to Journal Directory (for direct translation)
+Hooks.on('renderJournalDirectory', (app, html) => {
+    if (!game.user.isGM) return;
+
+    const button = createTranslateButton('COMPENDIUM_TRANSLATOR.WorldTranslator.TranslateJournals', (e) => {
+        e.preventDefault();
+        new WorldTranslationUI({ entityType: 'journal' }).render(true);
+    });
+
+    addButtonToHeader(html, button);
+});
+
+// Add button to Actor Directory
+Hooks.on('renderActorDirectory', (app, html) => {
+    if (!game.user.isGM) return;
+
+    const button = createTranslateButton('COMPENDIUM_TRANSLATOR.WorldTranslator.TranslateActors', (e) => {
+        e.preventDefault();
+        new WorldTranslationUI({ entityType: 'actor' }).render(true);
+    });
+
+    addButtonToHeader(html, button);
+});
+
+// Add button to Item Directory
+Hooks.on('renderItemDirectory', (app, html) => {
+    if (!game.user.isGM) return;
+
+    const button = createTranslateButton('COMPENDIUM_TRANSLATOR.WorldTranslator.TranslateItems', (e) => {
+        e.preventDefault();
+        new WorldTranslationUI({ entityType: 'item' }).render(true);
+    });
+
+    addButtonToHeader(html, button);
+});
+
+// Add button to RollTable Directory
+Hooks.on('renderRollTableDirectory', (app, html) => {
+    if (!game.user.isGM) return;
+
+    const button = createTranslateButton('COMPENDIUM_TRANSLATOR.WorldTranslator.TranslateTables', (e) => {
+        e.preventDefault();
+        new WorldTranslationUI({ entityType: 'rolltable' }).render(true);
+    });
+
+    addButtonToHeader(html, button);
 });
 
 console.log('[Compendium Translator] Module loaded');

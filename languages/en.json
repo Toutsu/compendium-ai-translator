@@ -63,6 +63,26 @@
         },
         "Warnings": {
             "LargeCompendium": "This compendium contains many entities. Translation may take some time and consume API credits."
+        },
+        "WorldTranslator": {
+            "Title": "World Entity Translator",
+            "TranslateJournals": "AI Translate",
+            "TranslateActors": "AI Translate",
+            "TranslateItems": "AI Translate",
+            "TranslateTables": "AI Translate",
+            "SelectEntities": "Select Entities to Translate",
+            "Extract": "Extract Content",
+            "GeneratePrompt": "Generate Prompt",
+            "CopyPrompt": "Copy Prompt",
+            "ProcessResponse": "Process Response",
+            "ApplyTranslation": "Apply Translation",
+            "GenerateSpellcheck": "Generate Spell-Check Prompt",
+            "RestoreBackup": "Restore Original",
+            "SelectAll": "Select All",
+            "DeselectAll": "Deselect All",
+            "SelectUntranslated": "Select Untranslated",
+            "Translated": "Translated",
+            "BackupWarning": "This will modify entities directly. Backups will be saved."
         }
     }
 }

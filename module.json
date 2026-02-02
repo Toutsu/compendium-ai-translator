@@ -39,7 +39,10 @@
         "scripts/TranslationUI.js",
         "scripts/DictionaryLoader.js",
         "scripts/TermReplacer.js",
-        "scripts/PromptGenerator.js"
+        "scripts/PromptGenerator.js",
+        "scripts/WorldEntityExtractor.js",
+        "scripts/EntityUpdater.js",
+        "scripts/WorldTranslationUI.js"
     ],
     "styles": [
         "styles/translator.css"
