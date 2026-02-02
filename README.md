@@ -9,59 +9,61 @@
 ### Ключевые особенности
 
 - ✨ **Поддержка всех типов сущностей** - переводит актёров, предметы, журналы, сцены и многое другое
-- 🤖 **5 AI провайдеров** - Google Gemini, ChatGPT, Claude, Copilot, Perplexity
-- 🌍 **Интеграция с Babele** - автоматически генерирует Babele-совместимые JSON файлы
-- 📦 **Пакетная обработка** - умная группировка сущностей для оптимизации API запросов
-- 💾 **Экспорт переводов** - сохраняйте переводы для распространения
-- 🎯 **Умное картирование полей** - автоматически определяет, что нужно переводить, а что нет
+- 📋 **Copy-Paste Workflow** - не нужен API ключ! Копируйте промпт в любой AI чат
+- 📚 **Интеграция с pf2e-ru** - автоматически загружает официальные переводы терминов
+- 🔄 **Автозамена терминов** - известные термины заменяются до перевода
+- 🌍 **Интеграция с Babele** - генерирует Babele-совместимые JSON файлы
+- ✅ **Проверка орфографии** - генерация промпта для проверки качества перевода
+- 🎯 **Умное картирование полей** - защита HTML, ссылок Foundry и формул бросков
 
-### Как это работает
+### Новый Copy-Paste Workflow
 
-1. Выберите компендиум для перевода
-2. Модуль извлекает все сущности
-3. AI переводит переводимые поля (описания, имена, тексты)
-4. Генерируется JSON файл в формате Babele
-5. Перевод регистрируется в Babele и применяется автоматически
+**Преимущества:**
+- 🆓 Не нужен API ключ — используйте любой AI бесплатно
+- 👁️ Полная прозрачность — видите что отправляется в AI
+- 📖 Единообразие терминов — использует официальные переводы pf2e-ru
+- ✏️ Контроль качества — опциональная проверка орфографии
+
+**Как это работает:**
+
+1. **Загрузить словарь** — нажмите "Load pf2e-ru Terms" для загрузки ~1,200 официальных переводов
+2. **Извлечь сущности** — выберите компендиум и нажмите "Extract"
+3. **Автозамена** — известные термины (Perception → Восприятие) заменяются автоматически
+4. **Сгенерировать промпт** — нажмите "Generate Prompt"
+5. **Скопировать в AI** — скопируйте промпт в буфер и вставьте в ChatGPT/Gemini/Claude
+6. **Вставить ответ** — скопируйте ответ AI и вставьте обратно
+7. **Обработать** — модуль создаст Babele JSON и зарегистрирует перевод
+8. **(Опционально)** — сгенерируйте промпт для проверки орфографии
 
 ### Требования
 
 - **Foundry VTT** версии 11 или выше
 - **Babele** модуль (обязательно)
-- API ключ для одного из поддерживаемых AI провайдеров
+- **pf2e-ru** модуль (опционально, для словаря терминов)
 
 ### Установка
 
 1. Установите модуль Babele (если еще не установлен)
-2. Скачайте этот модуль и разместите в `Data/modules/compendium-ai-translator`
-3. Активируйте оба модуля в настройках мира
+2. Установите pf2e-ru модуль (рекомендуется для PF2e)
+3. Скачайте этот модуль и разместите в `Data/modules/compendium-ai-translator`
+4. Активируйте модули в настройках мира
 
 ### Использование
 
 1. Откройте вкладку **Компендиумы**
 2. Нажмите кнопку **AI Перевод** в заголовке
-3. Выберите компендиум для перевода
-4. Настройте AI провайдера (при первом запуске введите API ключ)
-5. Нажмите **Начать Перевод**
-6. Дождитесь завершения (прогресс отображается в реальном времени)
-7. Экспортируйте JSON файл для сохранения или распространения
+3. Нажмите **Load pf2e-ru Terms** для загрузки словаря
+4. Выберите компендиум для перевода
+5. Следуйте пошаговому процессу (Extract → Generate → Copy → Paste → Process)
+6. Экспортируйте JSON файл для сохранения или распространения
 
-### Настройки
+### Защита контента
 
-- **AI Провайдер** - выбор между Gemini, ChatGPT, Claude и др.
-- **Целевой язык** - язык, на который переводить (Русский, Немецкий, и др.)
-- **Исходный язык** - оригинальный язык контента
-- **Размер пакета** - количество сущностей на AI запрос
-- **Макс. длина запроса** - лимит символов для одного запроса
-
-### API Ключи
-
-Ваш API ключ хранится **только в вашем браузере** (localStorage). Модуль не отправляет ключи никуда, кроме выбранного AI провайдера.
-
-Как получить API ключи:
-- **Google Gemini**: https://makersuite.google.com/app/apikey
-- **ChatGPT**: https://platform.openai.com/api-keys
-- **Claude**: https://console.anthropic.com/
-- **Perplexity**: https://www.perplexity.ai/settings/api
+Модуль автоматически защищает:
+- **HTML теги** — `<p>`, `<strong>`, `<em>` и др.
+- **Ссылки Foundry** — `@UUID[...]`, `@Compendium[...]`, `@Actor[...]`
+- **Формулы бросков** — `[[2d6+3]]`, `[[/r 1d20]]`
+- **Механики игры** — формулы урона, ID, системные значения
 
 </div>
 
@@ -76,59 +78,61 @@
 ### Key Features
 
 - ✨ **All entity type support** - translates actors, items, journals, scenes, and more
-- 🤖 **5 AI providers** - Google Gemini, ChatGPT, Claude, Copilot, Perplexity
-- 🌍 **Babele integration** - automatically generates Babele-compatible JSON files
-- 📦 **Batch processing** - smart entity grouping for optimal API usage
-- 💾 **Export translations** - save translations for distribution
-- 🎯 **Smart field mapping** - automatically identifies what to translate and what not to
+- 📋 **Copy-Paste Workflow** - no API key needed! Copy prompt to any AI chat
+- 📚 **pf2e-ru Integration** - automatically loads official term translations
+- 🔄 **Auto term replacement** - known terms replaced before translation
+- 🌍 **Babele integration** - generates Babele-compatible JSON files
+- ✅ **Spell-check support** - generate prompt for quality review
+- 🎯 **Smart field mapping** - protects HTML, Foundry links, and roll formulas
 
-### How It Works
+### New Copy-Paste Workflow
 
-1. Select a compendium to translate
-2. Module extracts all entities
-3. AI translates translatable fields (descriptions, names, text)
-4. Babele JSON file is generated
-5. Translation is registered with Babele and applied automatically
+**Benefits:**
+- 🆓 No API key required — use any AI for free
+- 👁️ Full transparency — see exactly what's sent to AI
+- 📖 Term consistency — uses official pf2e-ru translations
+- ✏️ Quality control — optional spell-check step
+
+**How it works:**
+
+1. **Load dictionary** — click "Load pf2e-ru Terms" to load ~1,200 official translations
+2. **Extract entities** — select compendium and click "Extract"
+3. **Auto-replace** — known terms (Perception → Восприятие) replaced automatically
+4. **Generate prompt** — click "Generate Prompt"
+5. **Copy to AI** — copy prompt to clipboard and paste into ChatGPT/Gemini/Claude
+6. **Paste response** — copy AI response and paste back
+7. **Process** — module creates Babele JSON and registers translation
+8. **(Optional)** — generate spell-check prompt for quality review
 
 ### Requirements
 
 - **Foundry VTT** version 11 or higher
 - **Babele** module (required)
-- API key for one of the supported AI providers
+- **pf2e-ru** module (optional, for term dictionary)
 
 ### Installation
 
 1. Install the Babele module (if not already installed)
-2. Download this module and place in `Data/modules/compendium-ai-translator`
-3. Activate both modules in world settings
+2. Install pf2e-ru module (recommended for PF2e)
+3. Download this module and place in `Data/modules/compendium-ai-translator`
+4. Activate modules in world settings
 
 ### Usage
 
 1. Open the **Compendium** tab
 2. Click the **AI Translate** button in the header
-3. Select a compendium to translate
-4. Configure AI provider (enter API key on first run)
-5. Click **Start Translation**
-6. Wait for completion (progress shown in real-time)
-7. Export JSON file to save or distribute
+3. Click **Load pf2e-ru Terms** to load dictionary
+4. Select a compendium to translate
+5. Follow the step-by-step workflow (Extract → Generate → Copy → Paste → Process)
+6. Export JSON file to save or distribute
 
-### Settings
+### Content Protection
 
-- **AI Provider** - choose between Gemini, ChatGPT, Claude, etc.
-- **Target Language** - language to translate to (Russian, German, etc.)
-- **Source Language** - original content language
-- **Batch Size** - number of entities per AI request
-- **Max Prompt Length** - character limit for single request
-
-### API Keys
-
-Your API key is stored **only in your browser** (localStorage). The module does not send keys anywhere except to your chosen AI provider.
-
-How to get API keys:
-- **Google Gemini**: https://makersuite.google.com/app/apikey
-- **ChatGPT**: https://platform.openai.com/api-keys
-- **Claude**: https://console.anthropic.com/
-- **Perplexity**: https://www.perplexity.ai/settings/api
+The module automatically protects:
+- **HTML tags** — `<p>`, `<strong>`, `<em>`, etc.
+- **Foundry links** — `@UUID[...]`, `@Compendium[...]`, `@Actor[...]`
+- **Roll formulas** — `[[2d6+3]]`, `[[/r 1d20]]`
+- **Game mechanics** — damage formulas, IDs, system values
 
 </div>
 
@@ -147,13 +151,17 @@ How to get API keys:
 | **Playlist** | Name, Description | |
 | **Cards** | Name, Description, Card text | |
 
-## System-Specific Support
+## Dictionary Integration
 
-The module includes enhanced field mapping for:
-- **Pathfinder 2e (PF2e)**
-- **D&D 5e**
+When **pf2e-ru** module is installed, the translator can:
+- Load ~1,200+ official Russian translations
+- Auto-replace known terms before sending to AI
+- Ensure consistent terminology across translations
+- Reduce translation costs and improve quality
 
-Other systems use generic field mapping and should work fine with most compendiums.
+**Loaded from:**
+- System translations (skills, abilities, conditions)
+- Compendium translations (bestiary, equipment, spells, feats)
 
 ## License
 
@@ -165,7 +173,8 @@ Created with ❤️ for the Foundry VTT community.
 
 Special thanks to:
 - **Babele** module by Simone Ricciardi for the translation framework
-- **pf2e-ru-ai-translator** by Phil and Toutsu for translation workflow inspiration
+- **pf2e-ru** team for official Russian translations
+- **pf2e-ru-ai-translator** by Phil and Toutsu for workflow inspiration
 
 ## Support
 
