@@ -1,0 +1,68 @@
+{
+    "COMPENDIUM_TRANSLATOR": {
+        "Title": "Compendium AI Translator",
+        "ButtonLabel": "AI Translate",
+        "Settings": {
+            "AIProvider": {
+                "Name": "AI Provider",
+                "Hint": "Select the AI provider you want to use for translations."
+            },
+            "TargetLanguage": {
+                "Name": "Target Language",
+                "Hint": "The language to translate content into (e.g., Russian, German, French)."
+            },
+            "SourceLanguage": {
+                "Name": "Source Language",
+                "Hint": "The original language of the content (usually English)."
+            },
+            "BatchSize": {
+                "Name": "Batch Size",
+                "Hint": "Number of entities to translate in a single AI request. Lower values = more API calls but better error recovery."
+            },
+            "MaxPromptLength": {
+                "Name": "Max Prompt Length",
+                "Hint": "Maximum number of characters to send in a single AI request."
+            },
+            "APIKey": {
+                "Name": "API Key (stored in browser)",
+                "Hint": "Your API key for the selected AI provider. This is stored locally in your browser only."
+            }
+        },
+        "UI": {
+            "SelectCompendium": "Select Compendium",
+            "SelectEntityType": "Entity Type",
+            "AllTypes": "All Types",
+            "StartTranslation": "Start Translation",
+            "CancelTranslation": "Cancel",
+            "ExportJSON": "Export Translation JSON",
+            "Progress": "Progress",
+            "Status": {
+                "Idle": "Ready to translate",
+                "Extracting": "Extracting entities...",
+                "Translating": "Translating...",
+                "Generating": "Generating Babele JSON...",
+                "Complete": "Translation complete!",
+                "Error": "Error occurred"
+            },
+            "EntityTypes": {
+                "Actor": "Actors",
+                "Item": "Items",
+                "JournalEntry": "Journal Entries",
+                "Scene": "Scenes",
+                "RollTable": "Roll Tables",
+                "Macro": "Macros",
+                "Playlist": "Playlists",
+                "Cards": "Card Decks"
+            }
+        },
+        "Errors": {
+            "NoAPIKey": "Please configure your API key in module settings.",
+            "NoCompendium": "Please select a compendium to translate.",
+            "TranslationFailed": "Translation failed: {error}",
+            "BabeleNotFound": "Babele module not found. Please install and enable it."
+        },
+        "Warnings": {
+            "LargeCompendium": "This compendium contains many entities. Translation may take some time and consume API credits."
+        }
+    }
+}

@@ -1,0 +1,26 @@
+# Ignore node modules if we add build tools later
+node_modules/
+package-lock.json
+yarn.lock
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore user-specific settings
+*.local
+
+# Ignore generated translations (users will create their own)
+translations/*.json
+!translations/.gitkeep
+
+# Ignore logs
+*.log
+npm-debug.log*

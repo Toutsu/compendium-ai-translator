@@ -1,0 +1,58 @@
+{
+    "id": "compendium-ai-translator",
+    "title": "Compendium AI Translator for Babele",
+    "version": "1.0.0",
+    "description": "AI-powered translation tool for Foundry VTT compendiums. Generates Babele-compatible translation files for all entity types (Actors, Items, Journals, etc.). Supports multiple AI providers: Gemini, ChatGPT, Claude, Copilot, and Perplexity.",
+    "authors": [
+        {
+            "name": "Compendium Translator Team",
+            "url": "https://github.com/yourname/compendium-translator",
+            "discord": ""
+        }
+    ],
+    "url": "https://github.com/yourname/compendium-translator",
+    "manifest": "https://github.com/yourname/compendium-translator/releases/latest/download/module.json",
+    "download": "https://github.com/yourname/compendium-translator/releases/latest/download/module.zip",
+    "compatibility": {
+        "minimum": "11",
+        "verified": "12",
+        "maximum": "12"
+    },
+    "relationships": {
+        "requires": [
+            {
+                "id": "babele",
+                "type": "module",
+                "manifest": "https://gitlab.com/riccisi/foundryvtt-babele/-/raw/master/module/module.json",
+                "compatibility": {
+                    "minimum": "3.0.0"
+                }
+            }
+        ]
+    },
+    "esmodules": [
+        "scripts/main.js",
+        "scripts/TranslationService.js",
+        "scripts/EntityExtractor.js",
+        "scripts/BabeleGenerator.js",
+        "scripts/TranslationUI.js",
+        "scripts/FieldMapper.js"
+    ],
+    "styles": [
+        "styles/translator.css"
+    ],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "languages/en.json"
+        },
+        {
+            "lang": "ru",
+            "name": "Русский",
+            "path": "languages/ru.json"
+        }
+    ],
+    "license": "LICENSE",
+    "readme": "README.md"
+}

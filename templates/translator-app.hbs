@@ -1,0 +1,85 @@
+<form class="compendium-translator-form">
+    <div class="form-group">
+        <label>{{localize "COMPENDIUM_TRANSLATOR.UI.SelectCompendium"}}</label>
+        <select name="compendium" {{#if translating}}disabled{{/if}}>
+            <option value="">-- {{localize "COMPENDIUM_TRANSLATOR.UI.SelectCompendium"}} --</option>
+            {{#each compendiums}}
+            <option value="{{this.id}}" {{#if (eq this.id ../selectedCompendium)}}selected{{/if}}>
+                {{this.label}} ({{this.type}})
+            </option>
+            {{/each}}
+        </select>
+        <div class="compendium-info"></div>
+    </div>
+
+    <div class="form-group">
+        <label>{{localize "COMPENDIUM_TRANSLATOR.UI.SelectEntityType"}}</label>
+        <select name="entityType" {{#if translating}}disabled{{/if}}>
+            <option value="">{{localize "COMPENDIUM_TRANSLATOR.UI.AllTypes"}}</option>
+            {{#each entityTypes}}
+            <option value="{{this}}" {{#if (eq this ../entityTypeFilter)}}selected{{/if}}>
+                {{localize (concat "COMPENDIUM_TRANSLATOR.UI.EntityTypes." this)}}
+            </option>
+            {{/each}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>{{localize "COMPENDIUM_TRANSLATOR.Settings.AIProvider.Name"}}</label>
+        <select name="provider" {{#if translating}}disabled{{/if}}>
+            {{#each providers}}
+            <option value="{{this.id}}" {{#if (eq this.id ../currentProvider)}}selected{{/if}}>
+                {{this.name}}
+            </option>
+            {{/each}}
+        </select>
+    </div>
+
+    {{#if translating}}
+    <div class="translation-progress">
+        <h3>{{localize "COMPENDIUM_TRANSLATOR.UI.Progress"}}</h3>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{math progress.current '/' progress.total '*' 100}}%"></div>
+        </div>
+        <p class="progress-text">
+            {{localize (concat "COMPENDIUM_TRANSLATOR.UI.Status." progress.status)}}
+            {{#if progress.total}}
+            ({{progress.current}} / {{progress.total}})
+            {{/if}}
+        </p>
+    </div>
+    {{/if}}
+
+    <div class="form-group button-group">
+        {{#unless translating}}
+        <button type="button" class="start-translation">
+            <i class="fas fa-play"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.StartTranslation"}}
+        </button>
+        
+        {{#if lastTranslation}}
+        <button type="button" class="export-json">
+            <i class="fas fa-download"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.ExportJSON"}}
+        </button>
+        {{/if}}
+        {{else}}
+        <button type="button" class="cancel-translation">
+            <i class="fas fa-stop"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.CancelTranslation"}}
+        </button>
+        {{/unless}}
+    </div>
+
+    {{#if (eq progress.status "complete")}}
+    <div class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <p>Translation complete! The translation has been registered with Babele.</p>
+        <p><small>Click "Export JSON" to save the translation file for distribution.</small></p>
+    </div>
+    {{/if}}
+
+    {{#if (eq progress.status "error")}}
+    <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Translation failed. Check console for details.</p>
+    </div>
+    {{/if}}
+</form>
