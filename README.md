@@ -15,6 +15,7 @@
 - 🌍 **Интеграция с Babele** - генерирует Babele-совместимые JSON файлы
 - ✅ **Проверка орфографии** - генерация промпта для проверки качества перевода
 - 🎯 **Умное картирование полей** - защита HTML, ссылок Foundry и формул бросков
+- 🆕 **Перевод сущностей мира** - переводите импортированные журналы, актёров и предметы напрямую
 
 ### Новый Copy-Paste Workflow
 
@@ -65,6 +66,21 @@
 - **Формулы бросков** — `[[2d6+3]]`, `[[/r 1d20]]`
 - **Механики игры** — формулы урона, ID, системные значения
 
+### Перевод сущностей мира (новое!)
+
+Помимо перевода компендиумов, модуль позволяет переводить уже импортированные сущности прямо в вашем мире:
+
+- **Журналы** — откройте вкладку Журналы → кнопка "AI Перевод"
+- **Актёры** — откройте вкладку Актёры → кнопка "AI Перевод"
+- **Предметы** — откройте вкладку Предметы → кнопка "AI Перевод"
+- **Таблицы бросков** — откройте вкладку Таблицы → кнопка "AI Перевод"
+
+**Особенности:**
+- ✅ Автоматическое создание резервных копий
+- ✅ Возможность отката к оригиналу
+- ✅ Пометка переведённых сущностей
+- ✅ Тот же copy-paste workflow
+
 </div>
 
 ---
@@ -84,6 +100,7 @@
 - 🌍 **Babele integration** - generates Babele-compatible JSON files
 - ✅ **Spell-check support** - generate prompt for quality review
 - 🎯 **Smart field mapping** - protects HTML, Foundry links, and roll formulas
+- 🆕 **World entity translation** - translate imported journals, actors and items directly
 
 ### New Copy-Paste Workflow
 
@@ -133,6 +150,21 @@ The module automatically protects:
 - **Foundry links** — `@UUID[...]`, `@Compendium[...]`, `@Actor[...]`
 - **Roll formulas** — `[[2d6+3]]`, `[[/r 1d20]]`
 - **Game mechanics** — damage formulas, IDs, system values
+
+### World Entity Translation (New!)
+
+In addition to compendium translation, the module can translate already-imported entities directly in your world:
+
+- **Journals** — open Journals tab → "AI Translate" button
+- **Actors** — open Actors tab → "AI Translate" button
+- **Items** — open Items tab → "AI Translate" button
+- **Roll Tables** — open Tables tab → "AI Translate" button
+
+**Features:**
+- ✅ Automatic backup creation
+- ✅ Restore to original option
+- ✅ Translated entities marked
+- ✅ Same copy-paste workflow
 
 </div>
 
