@@ -93,7 +93,7 @@ Hooks.once('ready', () => {
     // Check if Babele is available
     if (typeof Babele === 'undefined') {
         console.warn('[Compendium Translator] Babele module not detected. This module requires Babele to function.');
-        ui.notifications.warn('Compendium AI Translator requires the Babele module to be installed and active.');
+        ui.notifications.warn(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.BabeleWarning'));
     }
 });
 
@@ -122,22 +122,13 @@ function addButtonToHeader(html, button) {
 Hooks.on('renderCompendiumDirectory', (app, html) => {
     if (!game.user.isGM) return;
 
-    const button = $(`
-        <button class="compendium-translator-btn" title="${game.i18n.localize('COMPENDIUM_TRANSLATOR.ButtonLabel')}">
-            <i class="fas fa-language"></i> ${game.i18n.localize('COMPENDIUM_TRANSLATOR.ButtonLabel')}
-        </button>
-    `);
-
-    button.on('click', () => {
+    const button = createTranslateButton('COMPENDIUM_TRANSLATOR.ButtonLabel', (e) => {
+        e.preventDefault();
         new TranslationUI().render(true);
     });
+    button.classList.add('compendium-translator-btn');
 
-    const headerActions = html.find('.directory-header .header-actions');
-    if (headerActions.length) {
-        headerActions.prepend(button);
-    } else {
-        html.find('.directory-header').append(button);
-    }
+    addButtonToHeader(html, button);
 });
 
 // Add button to Journal Directory (for direct translation)

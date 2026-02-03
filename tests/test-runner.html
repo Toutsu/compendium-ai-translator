@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compendium AI Translator - Unit Tests</title>
+    <style>
+        :root {
+            --pass-color: #4CAF50;
+            --fail-color: #f44336;
+            --pending-color: #ff9800;
+            --bg-color: #1e1e1e;
+            --text-color: #ddd;
+            --border-color: #444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .summary {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #2d2d2d;
+            border-radius: 8px;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-item.pass {
+            color: var(--pass-color);
+        }
+
+        .summary-item.fail {
+            color: var(--fail-color);
+        }
+
+        .test-suite {
+            background: #2d2d2d;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .suite-header {
+            padding: 12px 15px;
+            background: #3d3d3d;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .test-case {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .test-case:last-child {
+            border-bottom: none;
+        }
+
+        .test-case.pass .status {
+            color: var(--pass-color);
+        }
+
+        .test-case.fail .status {
+            color: var(--fail-color);
+        }
+
+        .test-case.fail .error {
+            margin-top: 5px;
+            padding: 8px;
+            background: #3d1a1a;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #ff8888;
+        }
+
+        .status {
+            font-weight: bold;
+            width: 50px;
+        }
+
+        .test-name {
+            flex: 1;
+        }
+
+        .duration {
+            color: #888;
+            font-size: 12px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧪 Compendium AI Translator - Unit Tests</h1>
+    <p style="color: #888; margin-bottom: 20px;">
+        These tests run without Foundry VTT and test pure JavaScript logic.
+    </p>
+    <button onclick="runAllTests()">▶ Run All Tests</button>
+    <div class="summary" id="summary">
+        <div class="summary-item" id="total">Total: 0</div>
+        <div class="summary-item pass" id="passed">✓ Passed: 0</div>
+        <div class="summary-item fail" id="failed">✗ Failed: 0</div>
+    </div>
+    <div id="results"></div>
+
+    <script type="module">
+        // ============================================================
+        // MINIMAL TEST FRAMEWORK
+        // ============================================================
+        const suites = [];
+        let currentSuite = null;
+
+        window.describe = (name, fn) => {
+            currentSuite = { name, tests: [] };
+            suites.push(currentSuite);
+            fn();
+            currentSuite = null;
+        };
+
+        window.it = (name, fn) => {
+            if (currentSuite) {
+                currentSuite.tests.push({ name, fn });
+            }
+        };
+
+        window.expect = (actual) => ({
+            toBe: (expected) => {
+                if (actual !== expected) {
+                    throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+                }
+            },
+            toEqual: (expected) => {
+                if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+                    throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+                }
+            },
+            toBeNull: () => {
+                if (actual !== null) {
+                    throw new Error(`Expected null, got ${JSON.stringify(actual)}`);
+                }
+            },
+            toBeTruthy: () => {
+                if (!actual) {
+                    throw new Error(`Expected truthy, got ${JSON.stringify(actual)}`);
+                }
+            },
+            toBeFalsy: () => {
+                if (actual) {
+                    throw new Error(`Expected falsy, got ${JSON.stringify(actual)}`);
+                }
+            },
+            toContain: (expected) => {
+                if (!actual.includes(expected)) {
+                    throw new Error(`Expected "${actual}" to contain "${expected}"`);
+                }
+            },
+            toHaveLength: (expected) => {
+                if (actual.length !== expected) {
+                    throw new Error(`Expected length ${expected}, got ${actual.length}`);
+                }
+            },
+            toHaveProperty: (prop) => {
+                if (!(prop in actual)) {
+                    throw new Error(`Expected object to have property "${prop}"`);
+                }
+            }
+        });
+
+        // ============================================================
+        // MOCK CLASSES (copy pure logic from scripts)
+        // ============================================================
+
+        // TermReplacer - Pure logic version
+        class TermReplacer {
+            static _regexCache = null;
+            static _lookupCache = null;
+            static _lastDictionary = null;
+
+            static replaceTerms(text, dictionary, appendOriginal = false) {
+                if (!text || !dictionary) return { text: text, replaced: [] };
+
+                if (this._lastDictionary !== dictionary || !this._regexCache || !this._lookupCache) {
+                    const keys = Object.keys(dictionary).sort((a, b) => b.length - a.length);
+                    if (keys.length === 0) return { text: text, replaced: [] };
+
+                    const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const pattern = keys.map(escapeRegExp).join("|");
+                    this._regexCache = new RegExp(`(?<!\\w)(${pattern})(?!\\w)`, 'gi');
+
+                    this._lookupCache = {};
+                    for (const [key, value] of Object.entries(dictionary)) {
+                        this._lookupCache[key.toLowerCase()] = { original: key, translation: value };
+                    }
+                    this._lastDictionary = dictionary;
+                }
+
+                const replacedTerms = new Map();
+                const protectionRegex = /((?:<[^>]+>)|(?:@[a-zA-Z0-9]+\[[^\]]*\](?:\{[^}]*\})?)|(?:\[\[.*?\]\]))/g;
+                const parts = text.split(protectionRegex);
+
+                const newText = parts.map((part, index) => {
+                    if (index % 2 === 1) return part;
+                    return part.replace(this._regexCache, (match) => {
+                        const entry = this._lookupCache[match.toLowerCase()];
+                        if (entry) {
+                            replacedTerms.set(entry.original, entry.translation);
+                            if (appendOriginal) {
+                                return `${entry.translation} %%${entry.original}%%`;
+                            }
+                            return entry.translation;
+                        }
+                        return match;
+                    });
+                }).join("");
+
+                const replacedList = Array.from(replacedTerms.entries()).map(([original, translation]) => ({ original, translation }));
+                return { text: newText, replaced: replacedList };
+            }
+
+            static clearCache() {
+                this._regexCache = null;
+                this._lookupCache = null;
+                this._lastDictionary = null;
+            }
+        }
+
+        // PromptGenerator - parseAIResponse only (other methods need game object)
+        class PromptGenerator {
+            static parseAIResponse(response) {
+                try {
+                    const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+                    const jsonText = jsonMatch ? jsonMatch[1] : response;
+                    const parsed = JSON.parse(jsonText.trim());
+
+                    if (!Array.isArray(parsed)) {
+                        return null;
+                    }
+
+                    for (const entity of parsed) {
+                        if (!entity.id || (!entity.translatedFields && !entity.translatableFields)) {
+                            return null;
+                        }
+                        if (entity.translatableFields && !entity.translatedFields) {
+                            entity.translatedFields = entity.translatableFields;
+                        }
+                    }
+                    return parsed;
+                } catch (err) {
+                    return null;
+                }
+            }
+
+            static generateStats(entities) {
+                let totalFields = 0;
+                let totalCharacters = 0;
+                const entityTypes = new Set();
+
+                for (const entity of entities) {
+                    if (entity.type) entityTypes.add(entity.type);
+                    if (entity.translatableFields) {
+                        totalFields += Object.keys(entity.translatableFields).length;
+                        for (const value of Object.values(entity.translatableFields)) {
+                            if (typeof value === 'string') {
+                                totalCharacters += value.length;
+                            }
+                        }
+                    }
+                }
+
+                return {
+                    entityCount: entities.length,
+                    totalFields,
+                    totalCharacters,
+                    entityTypes: Array.from(entityTypes),
+                    estimatedTokens: Math.ceil(totalCharacters / 4)
+                };
+            }
+        }
+
+        // BabeleGenerator - Pure logic
+        class BabeleGenerator {
+            static setNestedProperty(obj, path, value) {
+                const parts = path.split('.');
+                let current = obj;
+                for (let i = 0; i < parts.length - 1; i++) {
+                    const part = parts[i];
+                    if (!current[part]) {
+                        current[part] = {};
+                    }
+                    current = current[part];
+                }
+                current[parts[parts.length - 1]] = value;
+            }
+
+            static generateEntry(entity) {
+                const entry = {};
+                const fields = entity.translatableFields || {};
+
+                for (const [path, value] of Object.entries(fields)) {
+                    if (path.includes('.')) {
+                        this.setNestedProperty(entry, path, value);
+                    } else {
+                        entry[path] = value;
+                    }
+                }
+                return entry;
+            }
+
+            static generateMapping(documentType) {
+                const mappings = {
+                    JournalEntry: { name: 'name', pages: { path: 'pages', converter: 'pages' } },
+                    Actor: { name: 'name', biography: 'system.details.biography.value' },
+                    Item: { name: 'name', description: 'system.description.value' },
+                    RollTable: { name: 'name', description: 'description', results: { path: 'results', converter: 'tableResults' } }
+                };
+                return mappings[documentType] || {};
+            }
+        }
+
+        // ============================================================
+        // TESTS
+        // ============================================================
+
+        describe('TermReplacer', () => {
+            it('should replace simple terms', () => {
+                TermReplacer.clearCache();
+                const dict = { 'Perception': 'Восприятие', 'Fortitude': 'Стойкость' };
+                const result = TermReplacer.replaceTerms('Make a Perception check', dict);
+                expect(result.text).toBe('Make a Восприятие check');
+                expect(result.replaced).toHaveLength(1);
+            });
+
+            it('should handle case-insensitive matching', () => {
+                TermReplacer.clearCache();
+                const dict = { 'Perception': 'Восприятие' };
+                const result = TermReplacer.replaceTerms('Your PERCEPTION is good', dict);
+                expect(result.text).toBe('Your Восприятие is good');
+            });
+
+            it('should not replace terms inside HTML tags', () => {
+                TermReplacer.clearCache();
+                const dict = { 'strong': 'сильный' };
+                const result = TermReplacer.replaceTerms('<strong>Text</strong>', dict);
+                expect(result.text).toBe('<strong>Text</strong>');
+            });
+
+            it('should not replace terms inside Foundry links', () => {
+                TermReplacer.clearCache();
+                const dict = { 'Fire': 'Огонь' };
+                const result = TermReplacer.replaceTerms('@UUID[Compendium.pf2e.spells.Fire]{Fire Spell}', dict);
+                expect(result.text).toContain('@UUID[Compendium.pf2e.spells.Fire]');
+            });
+
+            it('should not replace terms inside inline rolls', () => {
+                TermReplacer.clearCache();
+                const dict = { 'damage': 'урон' };
+                const result = TermReplacer.replaceTerms('Deal [[2d6]] damage', dict);
+                expect(result.text).toContain('[[2d6]]');
+            });
+
+            it('should handle empty text', () => {
+                const result = TermReplacer.replaceTerms('', { 'Test': 'Тест' });
+                expect(result.text).toBe('');
+            });
+
+            it('should handle null dictionary', () => {
+                const result = TermReplacer.replaceTerms('Some text', null);
+                expect(result.text).toBe('Some text');
+            });
+
+            it('should append original term when flag is set', () => {
+                TermReplacer.clearCache();
+                const dict = { 'Perception': 'Восприятие' };
+                const result = TermReplacer.replaceTerms('Perception', dict, true);
+                expect(result.text).toBe('Восприятие %%Perception%%');
+            });
+        });
+
+        describe('PromptGenerator.parseAIResponse', () => {
+            it('should parse valid JSON array', () => {
+                const response = '[{"id": "test-1", "name": "Тест", "translatedFields": {"name": "Тест"}}]';
+                const result = PromptGenerator.parseAIResponse(response);
+                expect(result).toHaveLength(1);
+                expect(result[0].id).toBe('test-1');
+            });
+
+            it('should extract JSON from markdown code blocks', () => {
+                const response = '```json\n[{"id": "test-1", "translatedFields": {"name": "Тест"}}]\n```';
+                const result = PromptGenerator.parseAIResponse(response);
+                expect(result).toHaveLength(1);
+            });
+
+            it('should handle translatableFields as alternative to translatedFields', () => {
+                const response = '[{"id": "test-1", "translatableFields": {"name": "Тест"}}]';
+                const result = PromptGenerator.parseAIResponse(response);
+                expect(result[0]).toHaveProperty('translatedFields');
+            });
+
+            it('should return null for invalid JSON', () => {
+                const result = PromptGenerator.parseAIResponse('not valid json');
+                expect(result).toBeNull();
+            });
+
+            it('should return null for non-array JSON', () => {
+                const result = PromptGenerator.parseAIResponse('{"id": "test"}');
+                expect(result).toBeNull();
+            });
+
+            it('should return null for entities missing required fields', () => {
+                const result = PromptGenerator.parseAIResponse('[{"name": "Test"}]');
+                expect(result).toBeNull();
+            });
+        });
+
+        describe('PromptGenerator.generateStats', () => {
+            it('should count entities correctly', () => {
+                const entities = [
+                    { id: '1', type: 'Item', translatableFields: { name: 'Test' } },
+                    { id: '2', type: 'Item', translatableFields: { name: 'Test2' } }
+                ];
+                const stats = PromptGenerator.generateStats(entities);
+                expect(stats.entityCount).toBe(2);
+            });
+
+            it('should count fields and characters', () => {
+                const entities = [
+                    { id: '1', translatableFields: { name: 'Hello', description: 'World' } }
+                ];
+                const stats = PromptGenerator.generateStats(entities);
+                expect(stats.totalFields).toBe(2);
+                expect(stats.totalCharacters).toBe(10);
+            });
+
+            it('should track entity types', () => {
+                const entities = [
+                    { id: '1', type: 'Item', translatableFields: {} },
+                    { id: '2', type: 'Actor', translatableFields: {} }
+                ];
+                const stats = PromptGenerator.generateStats(entities);
+                expect(stats.entityTypes).toContain('Item');
+                expect(stats.entityTypes).toContain('Actor');
+            });
+        });
+
+        describe('BabeleGenerator.setNestedProperty', () => {
+            it('should set simple property', () => {
+                const obj = {};
+                BabeleGenerator.setNestedProperty(obj, 'name', 'Test');
+                expect(obj.name).toBe('Test');
+            });
+
+            it('should set nested property', () => {
+                const obj = {};
+                BabeleGenerator.setNestedProperty(obj, 'system.description.value', 'Test');
+                expect(obj.system.description.value).toBe('Test');
+            });
+
+            it('should create intermediate objects', () => {
+                const obj = {};
+                BabeleGenerator.setNestedProperty(obj, 'a.b.c.d', 'deep');
+                expect(obj.a.b.c.d).toBe('deep');
+            });
+        });
+
+        describe('BabeleGenerator.generateEntry', () => {
+            it('should generate flat entry', () => {
+                const entity = { translatableFields: { name: 'Тест', description: 'Описание' } };
+                const entry = BabeleGenerator.generateEntry(entity);
+                expect(entry.name).toBe('Тест');
+                expect(entry.description).toBe('Описание');
+            });
+
+            it('should handle nested paths', () => {
+                const entity = { translatableFields: { 'system.description.value': 'Описание' } };
+                const entry = BabeleGenerator.generateEntry(entity);
+                expect(entry.system.description.value).toBe('Описание');
+            });
+        });
+
+        describe('BabeleGenerator.generateMapping', () => {
+            it('should return mapping for JournalEntry', () => {
+                const mapping = BabeleGenerator.generateMapping('JournalEntry');
+                expect(mapping).toHaveProperty('name');
+                expect(mapping).toHaveProperty('pages');
+            });
+
+            it('should return mapping for Item', () => {
+                const mapping = BabeleGenerator.generateMapping('Item');
+                expect(mapping).toHaveProperty('description');
+            });
+
+            it('should return empty object for unknown type', () => {
+                const mapping = BabeleGenerator.generateMapping('UnknownType');
+                expect(JSON.stringify(mapping)).toBe('{}');
+            });
+        });
+
+        // ============================================================
+        // TEST RUNNER
+        // ============================================================
+        window.runAllTests = async () => {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            let passed = 0;
+            let failed = 0;
+
+            for (const suite of suites) {
+                const suiteDiv = document.createElement('div');
+                suiteDiv.className = 'test-suite';
+
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'suite-header';
+                headerDiv.textContent = suite.name;
+                suiteDiv.appendChild(headerDiv);
+
+                for (const test of suite.tests) {
+                    const testDiv = document.createElement('div');
+                    testDiv.className = 'test-case';
+
+                    const start = performance.now();
+                    try {
+                        await test.fn();
+                        const duration = (performance.now() - start).toFixed(2);
+                        testDiv.className += ' pass';
+                        testDiv.innerHTML = `
+                            <span class="status">✓ PASS</span>
+                            <span class="test-name">${test.name}</span>
+                            <span class="duration">${duration}ms</span>
+                        `;
+                        passed++;
+                    } catch (error) {
+                        const duration = (performance.now() - start).toFixed(2);
+                        testDiv.className += ' fail';
+                        testDiv.innerHTML = `
+                            <span class="status">✗ FAIL</span>
+                            <span class="test-name">${test.name}</span>
+                            <span class="duration">${duration}ms</span>
+                            <div class="error">${error.message}</div>
+                        `;
+                        failed++;
+                    }
+                    suiteDiv.appendChild(testDiv);
+                }
+
+                resultsDiv.appendChild(suiteDiv);
+            }
+
+            document.getElementById('total').textContent = `Total: ${passed + failed}`;
+            document.getElementById('passed').textContent = `✓ Passed: ${passed}`;
+            document.getElementById('failed').textContent = `✗ Failed: ${failed}`;
+        };
+
+        // Auto-run on load
+        runAllTests();
+    </script>
+</body>
+
+</html>

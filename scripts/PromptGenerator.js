@@ -206,10 +206,16 @@ ${text}
             }
 
             // Validate each entity has required fields
+            // Validate each entity has required fields
             for (const entity of parsed) {
-                if (!entity.id || !entity.translatedFields) {
-                    console.error("[PromptGenerator] Invalid entity structure:", entity);
+                if (!entity.id || (!entity.translatedFields && !entity.translatableFields)) {
+                    console.error("[PromptGenerator] Invalid entity structure (missing fields):", entity);
                     return null;
+                }
+
+                // Normalize field name to help downstream processing
+                if (entity.translatableFields && !entity.translatedFields) {
+                    entity.translatedFields = entity.translatableFields;
                 }
             }
 

@@ -12,7 +12,7 @@ export class FieldMapper {
     static getFieldMap(documentType, systemId = game.system.id) {
         const baseMap = this.getBaseFieldMap(documentType);
         const systemMap = this.getSystemSpecificMap(documentType, systemId);
-        
+
         return foundry.utils.mergeObject(baseMap, systemMap);
     }
 
@@ -155,11 +155,23 @@ export class FieldMapper {
         if (fieldMap.nested) {
             for (const [nestedPath, nestedConfig] of Object.entries(fieldMap.nested)) {
                 const nestedDocs = foundry.utils.getProperty(doc, nestedPath);
+
+                // Debug logging
+                if (nestedPath === 'pages' && Array.isArray(nestedDocs) && nestedDocs.length > 0) {
+                    console.log(`[FieldMapper] Found ${nestedDocs.length} pages. First page keys:`, Object.keys(nestedDocs[0]));
+                }
+
                 if (Array.isArray(nestedDocs)) {
                     extracted[nestedPath] = nestedDocs.map(nestedDoc => {
                         const nestedExtracted = {};
                         for (const nestedField of nestedConfig.translatable) {
                             const value = foundry.utils.getProperty(nestedDoc, nestedField);
+
+                            // Debug logging for specific fields
+                            if (nestedField === 'text.content') {
+                                // console.log(`[FieldMapper] Checking text.content:`, value ? (value.substring(0, 20) + '...') : 'undefined');
+                            }
+
                             if (value && typeof value === 'string' && value.trim()) {
                                 nestedExtracted[nestedField] = value;
                             }
@@ -169,6 +181,12 @@ export class FieldMapper {
                             fields: nestedExtracted
                         };
                     });
+
+                    // Filter out empty nested items
+                    // extracted[nestedPath] = extracted[nestedPath].filter(item => Object.keys(item.fields).length > 0);
+                    // ^ Wait, current logic doesn't filter them out here, but maybe it should?
+                    // Actually, let's look at why extracted is empty.
+                    // If map returns array of objects with empty fields, that's still an array.
                 }
             }
         }

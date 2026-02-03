@@ -30,6 +30,7 @@
         },
         "UI": {
             "SelectCompendium": "Выберите Компендиум",
+            "SelectCompendiumPlaceholder": "-- Выберите Компендиум --",
             "SelectEntityType": "Тип Сущности",
             "AllTypes": "Все Типы",
             "StartTranslation": "Начать Перевод",
@@ -42,7 +43,13 @@
                 "Translating": "Перевод...",
                 "Generating": "Генерация Babele JSON...",
                 "Complete": "Перевод завершён!",
-                "Error": "Произошла ошибка"
+                "Error": "Произошла ошибка",
+                "Parsing": "Парсинг ответа...",
+                "Processing": "Обработка...",
+                "Applying": "Применение перевода...",
+                "LoadingDictionary": "Загрузка словаря...",
+                "ReplacingTerms": "Замена терминов...",
+                "ReadyToApply": "Готов к применению"
             },
             "EntityTypes": {
                 "Actor": "Актёры",
@@ -53,16 +60,121 @@
                 "Macro": "Макросы",
                 "Playlist": "Плейлисты",
                 "Cards": "Колоды Карт"
+            },
+            "Dictionary": {
+                "Title": "Словарь",
+                "LoadPf2eRu": "Загрузить термины pf2e-ru",
+                "Clear": "Очистить",
+                "Loaded": "✓ Загружено:",
+                "Terms": "терминов",
+                "TermsLoaded": "терминов загружено",
+                "SampleTerms": "Примеры терминов...",
+                "NotDetected": "Модуль pf2e-ru не обнаружен",
+                "NotFound": "Модуль pf2e-ru не найден"
+            },
+            "Workflow": {
+                "Title": "Процесс Перевода",
+                "Step1": "1. Извлечение Сущностей",
+                "Step2": "2. Генерация Промпта",
+                "Step3": "3. Копирование в AI",
+                "Step4": "4. Вставка Ответа AI",
+                "Step5": "5. Проверка Качества (Опционально)",
+                "Step6": "6. Применение Перевода",
+                "ExtractFromCompendium": "Извлечь из Компендиума",
+                "ExtractSelected": "Извлечь Выбранные",
+                "GenerateTranslationPrompt": "Сгенерировать Промпт",
+                "GeneratePrompt": "Сгенерировать Промпт",
+                "CopyToClipboard": "Копировать в Буфер",
+                "CopyPrompt": "Копировать Промпт",
+                "ProcessTranslation": "Обработать Перевод",
+                "ProcessResponse": "Обработать Ответ",
+                "GenerateSpellcheck": "Промпт для Проверки Орфографии",
+                "ApplyToEntities": "Применить к Сущностям",
+                "PasteHint": "Вставьте это в Gemini/ChatGPT/Claude, затем скопируйте ответ ниже",
+                "PastePlaceholder": "Вставьте JSON-ответ AI сюда..."
+            },
+            "Mode": {
+                "CopyPaste": "Режим Копирования",
+                "DirectAPI": "Режим API",
+                "ToggleTitle": "Переключить режим API"
+            },
+            "Stats": {
+                "Total": "Всего",
+                "Translatable": "Для перевода",
+                "Translated": "Переведено",
+                "Remaining": "Осталось",
+                "TotalEntities": "Всего сущностей",
+                "EstimatedCharacters": "Примерно символов",
+                "Type": "Тип",
+                "Pages": "страниц"
+            },
+            "Selection": {
+                "SelectEntities": "Выберите сущности для перевода",
+                "SelectAll": "Выбрать все",
+                "DeselectAll": "Снять выбор",
+                "SelectUntranslated": "Выбрать непереведённые",
+                "AlreadyTranslated": "Уже переведено",
+                "RestoreOriginal": "Восстановить оригинал"
+            },
+            "Provider": {
+                "Label": "AI Провайдер (для справки)"
+            },
+            "Success": {
+                "TranslationComplete": "Перевод завершён и зарегистрирован в Babele!",
+                "TranslationApplied": "Перевод успешно применён!",
+                "Complete": "Готово!"
+            },
+            "Confirmation": {
+                "ApplyTitle": "Применить Перевод",
+                "ApplyContent": "Это изменит {count} сущностей напрямую.",
+                "BackupNote": "Оригинальный контент будет сохранён и может быть восстановлен.",
+                "Continue": "Продолжить?",
+                "RestoreTitle": "Восстановить Оригинал",
+                "RestoreContent": "Восстановить \"{name}\" к оригинальному содержимому?"
             }
         },
         "Errors": {
             "NoAPIKey": "Пожалуйста, настройте ваш API ключ в настройках модуля.",
             "NoCompendium": "Пожалуйста, выберите компендиум для перевода.",
             "TranslationFailed": "Перевод не удался: {error}",
-            "BabeleNotFound": "Модуль Babele не найден. Пожалуйста, установите и включите его."
+            "BabeleNotFound": "Модуль Babele не найден. Пожалуйста, установите и включите его.",
+            "BabeleWarning": "Для работы AI Переводчика Компендиумов требуется модуль Babele.",
+            "NoEntities": "Не найдено сущностей для перевода",
+            "SelectAtLeast": "Выберите хотя бы одну сущность",
+            "ExtractFirst": "Сначала извлеките сущности",
+            "GenerateFirst": "Сначала сгенерируйте промпт",
+            "ProcessFirst": "Сначала обработайте ответ AI",
+            "CompleteFirst": "Сначала завершите перевод",
+            "PasteFirst": "Сначала вставьте ответ AI",
+            "InvalidFormat": "Неверный формат ответа AI",
+            "EntityNotFound": "Сущность не найдена",
+            "CopyFailed": "Не удалось скопировать в буфер обмена",
+            "ParseFailed": "Неверный формат ответа",
+            "ApplyFailed": "Не удалось применить",
+            "RestoreFailed": "Не удалось восстановить",
+            "LoadFailed": "Не удалось загрузить словарь",
+            "GenericError": "Произошла ошибка. Проверьте консоль для деталей."
         },
         "Warnings": {
-            "LargeCompendium": "Этот компендиум содержит много сущностей. Перевод может занять время и потребить API кредиты."
+            "LargeCompendium": "Этот компендиум содержит много сущностей. Перевод может занять время и потребить API кредиты.",
+            "DirectModeNotReady": "Режим прямого API ещё не обновлён. Используйте режим копирования.",
+            "BackupWarning": "Это изменит сущности напрямую. Резервные копии будут сохранены."
+        },
+        "Notifications": {
+            "DictionaryLoaded": "Загружено {count} терминов из pf2e-ru",
+            "DictionaryCleared": "Кэш словаря очищен",
+            "Extracted": "Извлечено {count} сущностей",
+            "ExtractedWithTerms": "Извлечено {count} сущностей. Автозамена {terms} терминов.",
+            "PromptGenerated": "Промпт сгенерирован: {count} сущностей, ~{tokens} токенов",
+            "PromptCopied": "Промпт скопирован в буфер обмена! Вставьте его в ваш AI чат.",
+            "PromptCopiedShort": "Промпт скопирован! Вставьте в AI чат.",
+            "SpellcheckCopied": "Промпт для проверки орфографии скопирован!",
+            "TranslationProcessed": "Перевод обработан и зарегистрирован в Babele!",
+            "TranslationExported": "JSON перевода успешно экспортирован!",
+            "NoTranslation": "Нет перевода для экспорта",
+            "ParsedEntities": "Распознано {count} переведённых сущностей",
+            "ApplyResult": "Применено: {success} успешно, {failed} неудачно",
+            "RestoredSuccess": "Успешно восстановлено"
         },
         "WorldTranslator": {
             "Title": "Переводчик Сущностей Мира",

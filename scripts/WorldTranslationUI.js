@@ -65,10 +65,10 @@ export class WorldTranslationUI extends FormApplication {
         return {
             entityType: this.entityType,
             entityTypes: [
-                { id: 'journal', name: 'Journals', icon: 'fa-book-open' },
-                { id: 'actor', name: 'Actors', icon: 'fa-user' },
-                { id: 'item', name: 'Items', icon: 'fa-suitcase' },
-                { id: 'rolltable', name: 'Roll Tables', icon: 'fa-th-list' }
+                { id: 'journal', name: game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.EntityTypes.JournalEntry'), icon: 'fa-book-open' },
+                { id: 'actor', name: game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.EntityTypes.Actor'), icon: 'fa-user' },
+                { id: 'item', name: game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.EntityTypes.Item'), icon: 'fa-suitcase' },
+                { id: 'rolltable', name: game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.EntityTypes.RollTable'), icon: 'fa-th-list' }
             ],
             entities: entityList,
             stats,
@@ -83,7 +83,7 @@ export class WorldTranslationUI extends FormApplication {
 
     getContentPreview(extracted) {
         if (extracted.pages && extracted.pages.length > 0) {
-            return `${extracted.pages.length} pages`;
+            return `${extracted.pages.length} ${game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Stats.Pages')}`;
         }
         if (extracted.fields) {
             const fields = Object.keys(extracted.fields);
@@ -174,19 +174,19 @@ export class WorldTranslationUI extends FormApplication {
         event.preventDefault();
 
         if (!DictionaryLoader.isPF2eRuAvailable()) {
-            ui.notifications.warn('pf2e-ru module not found');
+            ui.notifications.warn(game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Dictionary.NotFound'));
             return;
         }
 
-        this.progress.status = 'loading-dictionary';
+        this.progress.status = game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Status.LoadingDictionary');
         this.render();
 
         try {
             this.dictionary = await DictionaryLoader.loadOfficialTranslations();
-            ui.notifications.info(`Loaded ${Object.keys(this.dictionary).length} terms`);
+            ui.notifications.info(game.i18n.format('COMPENDIUM_TRANSLATOR.Notifications.DictionaryLoaded', { count: Object.keys(this.dictionary).length }));
         } catch (error) {
             console.error('[World Translator] Dictionary load failed:', error);
-            ui.notifications.error('Failed to load dictionary');
+            ui.notifications.error(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.LoadFailed'));
         }
 
         this.progress.status = 'idle';
@@ -197,11 +197,11 @@ export class WorldTranslationUI extends FormApplication {
         event.preventDefault();
 
         if (this.selectedEntities.size === 0) {
-            ui.notifications.warn('Select at least one entity');
+            ui.notifications.warn(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.SelectAtLeast'));
             return;
         }
 
-        this.progress.status = 'extracting';
+        this.progress.status = game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Status.Extracting');
         this.render();
 
         try {
@@ -212,22 +212,25 @@ export class WorldTranslationUI extends FormApplication {
 
             // Apply term replacement if dictionary loaded
             if (this.dictionary) {
-                this.progress.status = 'replacing-terms';
+                this.progress.status = game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Status.ReplacingTerms');
                 this.render();
 
                 const result = TermReplacer.processEntities(this.extractedData, this.dictionary);
                 this.processedData = result.entities;
 
-                ui.notifications.info(`Extracted ${this.extractedData.length} entities, replaced ${result.totalReplacements.length} terms`);
+                ui.notifications.info(game.i18n.format('COMPENDIUM_TRANSLATOR.Notifications.ExtractedWithTerms', {
+                    count: this.extractedData.length,
+                    terms: result.totalReplacements.length
+                }));
             } else {
                 this.processedData = this.extractedData;
-                ui.notifications.info(`Extracted ${this.extractedData.length} entities`);
+                ui.notifications.info(game.i18n.format('COMPENDIUM_TRANSLATOR.Notifications.Extracted', { count: this.extractedData.length }));
             }
 
             this.progress.status = 'extracted';
         } catch (error) {
             console.error('[World Translator] Extraction failed:', error);
-            ui.notifications.error('Extraction failed');
+            ui.notifications.error(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.GenericError'));
             this.progress.status = 'error';
         }
 
@@ -238,7 +241,7 @@ export class WorldTranslationUI extends FormApplication {
         event.preventDefault();
 
         if (!this.processedData || this.processedData.length === 0) {
-            ui.notifications.warn('Extract entities first');
+            ui.notifications.warn(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.ExtractFirst'));
             return;
         }
 
@@ -247,7 +250,10 @@ export class WorldTranslationUI extends FormApplication {
         // Generate prompt for world entities (different format - direct update)
         this.generatedPrompt = this.generateWorldTranslationPrompt(this.processedData, targetLang);
 
-        ui.notifications.info(`Prompt generated for ${this.processedData.length} entities`);
+        ui.notifications.info(game.i18n.format('COMPENDIUM_TRANSLATOR.Notifications.PromptGenerated', {
+            count: this.processedData.length,
+            tokens: '~'
+        }));
         this.render();
     }
 
@@ -294,15 +300,15 @@ Return the same structure with translated values. Keep all IDs unchanged.
         event.preventDefault();
 
         if (!this.generatedPrompt) {
-            ui.notifications.warn('Generate prompt first');
+            ui.notifications.warn(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.GenerateFirst'));
             return;
         }
 
         try {
             await navigator.clipboard.writeText(this.generatedPrompt);
-            ui.notifications.info('Prompt copied! Paste into AI chat.');
+            ui.notifications.info(game.i18n.localize('COMPENDIUM_TRANSLATOR.Notifications.PromptCopiedShort'));
         } catch (error) {
-            ui.notifications.error('Copy failed');
+            ui.notifications.error(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.CopyFailed'));
         }
     }
 
@@ -311,11 +317,11 @@ Return the same structure with translated values. Keep all IDs unchanged.
 
         const responseText = this.element.find('[name="ai-response"]').val();
         if (!responseText) {
-            ui.notifications.warn('Paste AI response first');
+            ui.notifications.warn(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.PasteFirst'));
             return;
         }
 
-        this.progress.status = 'processing';
+        this.progress.status = game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Status.Processing');
         this.render();
 
         try {
@@ -331,11 +337,11 @@ Return the same structure with translated values. Keep all IDs unchanged.
                 throw new Error('Expected array of entities');
             }
 
-            ui.notifications.info(`Parsed ${this.translatedData.length} translated entities`);
+            ui.notifications.info(game.i18n.format('COMPENDIUM_TRANSLATOR.Notifications.ParsedEntities', { count: this.translatedData.length }));
             this.progress.status = 'ready-to-apply';
         } catch (error) {
             console.error('[World Translator] Parse failed:', error);
-            ui.notifications.error('Invalid response format: ' + error.message);
+            ui.notifications.error(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.ParseFailed') + ': ' + error.message);
             this.progress.status = 'error';
         }
 
@@ -346,7 +352,7 @@ Return the same structure with translated values. Keep all IDs unchanged.
         event.preventDefault();
 
         if (!this.translatedData || !this.extractedData) {
-            ui.notifications.warn('Complete translation first');
+            ui.notifications.warn(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.CompleteFirst'));
             return;
         }
 
@@ -357,9 +363,9 @@ Return the same structure with translated values. Keep all IDs unchanged.
 
         try {
             await navigator.clipboard.writeText(spellcheckPrompt);
-            ui.notifications.info('Spell-check prompt copied!');
+            ui.notifications.info(game.i18n.localize('COMPENDIUM_TRANSLATOR.Notifications.SpellcheckCopied'));
         } catch (error) {
-            ui.notifications.error('Copy failed');
+            ui.notifications.error(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.CopyFailed'));
         }
     }
 
@@ -367,21 +373,21 @@ Return the same structure with translated values. Keep all IDs unchanged.
         event.preventDefault();
 
         if (!this.translatedData) {
-            ui.notifications.warn('Process AI response first');
+            ui.notifications.warn(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.ProcessFirst'));
             return;
         }
 
         // Confirm with user
         const confirmed = await Dialog.confirm({
-            title: 'Apply Translation',
-            content: `<p>This will modify ${this.translatedData.length} entities directly.</p>
-                      <p>Original content will be backed up and can be restored.</p>
-                      <p><strong>Continue?</strong></p>`
+            title: game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Confirmation.ApplyTitle'),
+            content: `<p>${game.i18n.format('COMPENDIUM_TRANSLATOR.UI.Confirmation.ApplyContent', { count: this.translatedData.length })}</p>
+                      <p>${game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Confirmation.BackupNote')}</p>
+                      <p><strong>${game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Confirmation.Continue')}</strong></p>`
         });
 
         if (!confirmed) return;
 
-        this.progress.status = 'applying';
+        this.progress.status = game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Status.Applying');
         this.progress.total = this.translatedData.length;
         this.progress.current = 0;
         this.render();
@@ -396,7 +402,10 @@ Return the same structure with translated values. Keep all IDs unchanged.
                 true // backup
             );
 
-            ui.notifications.info(`Applied: ${result.success} success, ${result.failed} failed`);
+            ui.notifications.info(game.i18n.format('COMPENDIUM_TRANSLATOR.Notifications.ApplyResult', {
+                success: result.success,
+                failed: result.failed
+            }));
 
             if (result.errors.length > 0) {
                 console.warn('[World Translator] Errors:', result.errors);
@@ -406,7 +415,7 @@ Return the same structure with translated values. Keep all IDs unchanged.
             this.selectedEntities.clear();
         } catch (error) {
             console.error('[World Translator] Apply failed:', error);
-            ui.notifications.error('Apply failed: ' + error.message);
+            ui.notifications.error(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.ApplyFailed') + ': ' + error.message);
             this.progress.status = 'error';
         }
 
@@ -421,23 +430,23 @@ Return the same structure with translated values. Keep all IDs unchanged.
         const entity = entities.find(e => e.id === entityId);
 
         if (!entity) {
-            ui.notifications.error('Entity not found');
+            ui.notifications.error(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.EntityNotFound'));
             return;
         }
 
         const confirmed = await Dialog.confirm({
-            title: 'Restore Original',
-            content: `<p>Restore "${entity.name}" to its original content?</p>`
+            title: game.i18n.localize('COMPENDIUM_TRANSLATOR.UI.Confirmation.RestoreTitle'),
+            content: `<p>${game.i18n.format('COMPENDIUM_TRANSLATOR.UI.Confirmation.RestoreContent', { name: entity.name })}</p>`
         });
 
         if (!confirmed) return;
 
         try {
             await EntityUpdater.restoreFromBackup(entity, this.entityType);
-            ui.notifications.info('Restored successfully');
+            ui.notifications.info(game.i18n.localize('COMPENDIUM_TRANSLATOR.Notifications.RestoredSuccess'));
             this.render();
         } catch (error) {
-            ui.notifications.error('Restore failed: ' + error.message);
+            ui.notifications.error(game.i18n.localize('COMPENDIUM_TRANSLATOR.Errors.RestoreFailed') + ': ' + error.message);
         }
     }
 }

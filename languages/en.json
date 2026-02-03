@@ -30,6 +30,7 @@
         },
         "UI": {
             "SelectCompendium": "Select Compendium",
+            "SelectCompendiumPlaceholder": "-- Select Compendium --",
             "SelectEntityType": "Entity Type",
             "AllTypes": "All Types",
             "StartTranslation": "Start Translation",
@@ -42,7 +43,13 @@
                 "Translating": "Translating...",
                 "Generating": "Generating Babele JSON...",
                 "Complete": "Translation complete!",
-                "Error": "Error occurred"
+                "Error": "Error occurred",
+                "Parsing": "Parsing response...",
+                "Processing": "Processing...",
+                "Applying": "Applying translation...",
+                "LoadingDictionary": "Loading dictionary...",
+                "ReplacingTerms": "Replacing terms...",
+                "ReadyToApply": "Ready to apply"
             },
             "EntityTypes": {
                 "Actor": "Actors",
@@ -53,16 +60,121 @@
                 "Macro": "Macros",
                 "Playlist": "Playlists",
                 "Cards": "Card Decks"
+            },
+            "Dictionary": {
+                "Title": "Dictionary",
+                "LoadPf2eRu": "Load pf2e-ru Terms",
+                "Clear": "Clear",
+                "Loaded": "✓ Loaded:",
+                "Terms": "terms",
+                "TermsLoaded": "terms loaded",
+                "SampleTerms": "Sample terms...",
+                "NotDetected": "pf2e-ru module not detected",
+                "NotFound": "pf2e-ru module not found"
+            },
+            "Workflow": {
+                "Title": "Translation Workflow",
+                "Step1": "1. Extract Entities",
+                "Step2": "2. Generate Prompt",
+                "Step3": "3. Copy to AI",
+                "Step4": "4. Paste AI Response",
+                "Step5": "5. Quality Check (Optional)",
+                "Step6": "6. Apply Translation",
+                "ExtractFromCompendium": "Extract from Compendium",
+                "ExtractSelected": "Extract Selected",
+                "GenerateTranslationPrompt": "Generate Translation Prompt",
+                "GeneratePrompt": "Generate Prompt",
+                "CopyToClipboard": "Copy to Clipboard",
+                "CopyPrompt": "Copy Prompt",
+                "ProcessTranslation": "Process Translation",
+                "ProcessResponse": "Process Response",
+                "GenerateSpellcheck": "Generate Spell-check Prompt",
+                "ApplyToEntities": "Apply to Entities",
+                "PasteHint": "Paste this into Gemini/ChatGPT/Claude, then copy the response below",
+                "PastePlaceholder": "Paste the AI's JSON response here..."
+            },
+            "Mode": {
+                "CopyPaste": "Copy-Paste Mode",
+                "DirectAPI": "Direct API Mode",
+                "ToggleTitle": "Toggle API Mode"
+            },
+            "Stats": {
+                "Total": "Total",
+                "Translatable": "Translatable",
+                "Translated": "Translated",
+                "Remaining": "Remaining",
+                "TotalEntities": "Total entities",
+                "EstimatedCharacters": "Estimated characters",
+                "Type": "Type",
+                "Pages": "pages"
+            },
+            "Selection": {
+                "SelectEntities": "Select Entities to Translate",
+                "SelectAll": "Select All",
+                "DeselectAll": "Deselect All",
+                "SelectUntranslated": "Select Untranslated",
+                "AlreadyTranslated": "Already translated",
+                "RestoreOriginal": "Restore original"
+            },
+            "Provider": {
+                "Label": "AI Provider (for reference)"
+            },
+            "Success": {
+                "TranslationComplete": "Translation complete and registered with Babele!",
+                "TranslationApplied": "Translation applied successfully!",
+                "Complete": "Complete!"
+            },
+            "Confirmation": {
+                "ApplyTitle": "Apply Translation",
+                "ApplyContent": "This will modify {count} entities directly.",
+                "BackupNote": "Original content will be backed up and can be restored.",
+                "Continue": "Continue?",
+                "RestoreTitle": "Restore Original",
+                "RestoreContent": "Restore \"{name}\" to its original content?"
             }
         },
         "Errors": {
             "NoAPIKey": "Please configure your API key in module settings.",
             "NoCompendium": "Please select a compendium to translate.",
             "TranslationFailed": "Translation failed: {error}",
-            "BabeleNotFound": "Babele module not found. Please install and enable it."
+            "BabeleNotFound": "Babele module not found. Please install and enable it.",
+            "BabeleWarning": "Compendium AI Translator requires the Babele module to be installed and active.",
+            "NoEntities": "No translatable entities found",
+            "SelectAtLeast": "Select at least one entity",
+            "ExtractFirst": "Extract entities first",
+            "GenerateFirst": "Generate prompt first",
+            "ProcessFirst": "Process AI response first",
+            "CompleteFirst": "Complete translation first",
+            "PasteFirst": "Please paste the AI response first",
+            "InvalidFormat": "Invalid AI response format",
+            "EntityNotFound": "Entity not found",
+            "CopyFailed": "Failed to copy to clipboard",
+            "ParseFailed": "Invalid response format",
+            "ApplyFailed": "Apply failed",
+            "RestoreFailed": "Restore failed",
+            "LoadFailed": "Failed to load dictionary",
+            "GenericError": "An error occurred. Check console for details."
         },
         "Warnings": {
-            "LargeCompendium": "This compendium contains many entities. Translation may take some time and consume API credits."
+            "LargeCompendium": "This compendium contains many entities. Translation may take some time and consume API credits.",
+            "DirectModeNotReady": "Direct API mode not yet updated for new workflow. Use copy-paste mode.",
+            "BackupWarning": "This will modify entities directly. Backups will be saved."
+        },
+        "Notifications": {
+            "DictionaryLoaded": "Loaded {count} terms from pf2e-ru",
+            "DictionaryCleared": "Dictionary cache cleared",
+            "Extracted": "Extracted {count} entities",
+            "ExtractedWithTerms": "Extracted {count} entities. Auto-replaced {terms} terms.",
+            "PromptGenerated": "Prompt generated: {count} entities, ~{tokens} tokens",
+            "PromptCopied": "Prompt copied to clipboard! Paste it into your AI chat.",
+            "PromptCopiedShort": "Prompt copied! Paste into AI chat.",
+            "SpellcheckCopied": "Spell-check prompt copied!",
+            "TranslationProcessed": "Translation processed and registered with Babele!",
+            "TranslationExported": "Translation JSON exported successfully!",
+            "NoTranslation": "No translation to export",
+            "ParsedEntities": "Parsed {count} translated entities",
+            "ApplyResult": "Applied: {success} success, {failed} failed",
+            "RestoredSuccess": "Restored successfully"
         },
         "WorldTranslator": {
             "Title": "World Entity Translator",

@@ -25,7 +25,7 @@
                 "type": "module",
                 "manifest": "https://gitlab.com/riccisi/foundryvtt-babele/-/raw/master/module/module.json",
                 "compatibility": {
-                    "minimum": "3.0.0"
+                    "minimum": "2.0.0"
                 }
             }
         ]

@@ -12,16 +12,22 @@ export class EntityExtractor {
      */
     static async extractFromCompendium(compendium, entityTypeFilter = null) {
         console.log(`[Compendium Translator] Extracting from ${compendium.metadata.label}`);
+        console.log(`[Compendium Translator] Compendium document type: ${compendium.documentName}`);
+        console.log(`[Compendium Translator] Entity type filter: ${entityTypeFilter}`);
+
+        // Check if the filter matches the compendium's document type
+        // entityTypeFilter should match compendium.documentName (e.g., "Cards", "JournalEntry")
+        if (entityTypeFilter && compendium.documentName !== entityTypeFilter) {
+            console.log(`[Compendium Translator] Skipping - compendium type ${compendium.documentName} doesn't match filter ${entityTypeFilter}`);
+            return [];
+        }
 
         const entities = [];
         const index = await compendium.getIndex();
 
-        for (const indexEntry of index) {
-            // Skip if filtering by type and doesn't match
-            if (entityTypeFilter && indexEntry.type !== entityTypeFilter) {
-                continue;
-            }
+        console.log(`[Compendium Translator] Index contains ${index.size} entries`);
 
+        for (const indexEntry of index) {
             const doc = await compendium.getDocument(indexEntry._id);
             if (!doc) continue;
 
@@ -42,7 +48,28 @@ export class EntityExtractor {
      */
     static extractEntity(doc) {
         const documentType = doc.documentName;
-        const extracted = FieldMapper.extractTranslatableFields(doc.toObject(), documentType);
+        const docData = doc.toObject();
+
+        // Debug: log first entity structure
+        if (!this._loggedFirstEntity) {
+            console.log(`[Compendium Translator] First entity structure (${documentType}):`, docData);
+
+            // Log pages if they exist
+            if (docData.pages) {
+                console.log(`[Compendium Translator] First entity pages:`, docData.pages);
+                if (docData.pages.length > 0) {
+                    console.log(`[Compendium Translator] First page content:`, docData.pages[0]);
+                } else {
+                    console.log(`[Compendium Translator] Entity has pages array but it is empty`);
+                }
+            } else {
+                console.log(`[Compendium Translator] Entity has no pages property`);
+            }
+
+            this._loggedFirstEntity = true;
+        }
+
+        const extracted = FieldMapper.extractTranslatableFields(docData, documentType);
 
         // Only include if there's something to translate
         if (Object.keys(extracted).length === 0) {
@@ -53,7 +80,7 @@ export class EntityExtractor {
             id: doc.id,
             name: doc.name,
             type: documentType,
-            originalData: doc.toObject(),
+            originalData: docData,
             translatableFields: extracted,
             metadata: {
                 compendium: doc.pack,

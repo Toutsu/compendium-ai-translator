@@ -11,35 +11,39 @@
 
     {{!-- Dictionary Section --}}
     <div class="dictionary-section">
-        <h3><i class="fas fa-book"></i> Dictionary</h3>
+        <h3><i class="fas fa-book"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.Dictionary.Title"}}</h3>
         {{#if isPF2eRuAvailable}}
         <button type="button" class="load-dictionary">
-            <i class="fas fa-download"></i> Load pf2e-ru Terms
+            <i class="fas fa-download"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.Dictionary.LoadPf2eRu"}}
         </button>
         {{#if dictionary.loaded}}
-        <span class="dictionary-status">✓ {{dictionary.count}} terms loaded</span>
+        <span class="dictionary-status">✓ {{dictionary.count}} {{localize
+            "COMPENDIUM_TRANSLATOR.UI.Dictionary.TermsLoaded"}}</span>
         {{/if}}
         {{else}}
-        <span class="warning">pf2e-ru module not found</span>
+        <span class="warning">{{localize "COMPENDIUM_TRANSLATOR.UI.Dictionary.NotFound"}}</span>
         {{/if}}
     </div>
 
     {{!-- Stats --}}
     <div class="stats-bar">
-        <span>Total: {{stats.total}}</span>
-        <span>Translatable: {{stats.translatable}}</span>
-        <span>Translated: {{stats.translated}}</span>
-        <span>Remaining: {{stats.remaining}}</span>
+        <span>{{localize "COMPENDIUM_TRANSLATOR.UI.Stats.Total"}}: {{stats.total}}</span>
+        <span>{{localize "COMPENDIUM_TRANSLATOR.UI.Stats.Translatable"}}: {{stats.translatable}}</span>
+        <span>{{localize "COMPENDIUM_TRANSLATOR.UI.Stats.Translated"}}: {{stats.translated}}</span>
+        <span>{{localize "COMPENDIUM_TRANSLATOR.UI.Stats.Remaining"}}: {{stats.remaining}}</span>
     </div>
 
     {{!-- Entity List --}}
     <div class="entity-list">
         <div class="list-header">
-            <label><strong>Select Entities to Translate</strong></label>
+            <label><strong>{{localize "COMPENDIUM_TRANSLATOR.UI.Selection.SelectEntities"}}</strong></label>
             <div class="list-actions">
-                <button type="button" class="select-all">Select All</button>
-                <button type="button" class="select-untranslated">Select Untranslated</button>
-                <button type="button" class="deselect-all">Deselect All</button>
+                <button type="button" class="select-all">{{localize
+                    "COMPENDIUM_TRANSLATOR.UI.Selection.SelectAll"}}</button>
+                <button type="button" class="select-untranslated">{{localize
+                    "COMPENDIUM_TRANSLATOR.UI.Selection.SelectUntranslated"}}</button>
+                <button type="button" class="deselect-all">{{localize
+                    "COMPENDIUM_TRANSLATOR.UI.Selection.DeselectAll"}}</button>
             </div>
         </div>
 
@@ -51,8 +55,10 @@
                         this.isSelected}}checked{{/if}}>
                     <span class="entity-name">{{this.name}}</span>
                     {{#if this.isTranslated}}
-                    <span class="translated-badge" title="Already translated">✓</span>
-                    <button type="button" class="restore-backup" data-id="{{this.id}}" title="Restore original">
+                    <span class="translated-badge" title="{{localize "
+                        COMPENDIUM_TRANSLATOR.UI.Selection.AlreadyTranslated"}}">✓</span>
+                    <button type="button" class="restore-backup" data-id="{{this.id}}" title="{{localize "
+                        COMPENDIUM_TRANSLATOR.UI.Selection.RestoreOriginal"}}">
                         <i class="fas fa-undo"></i>
                     </button>
                     {{/if}}
@@ -67,18 +73,19 @@
     <div class="workflow-section">
         {{!-- Step 1: Extract --}}
         <div class="workflow-step">
-            <h4>1. Extract Content</h4>
+            <h4>{{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.Step1"}}</h4>
             <button type="button" class="extract-selected" {{#unless hasSelection}}disabled{{/unless}}>
-                <i class="fas fa-file-export"></i> Extract Selected ({{selectedEntities.size}})
+                <i class="fas fa-file-export"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.ExtractSelected"}}
+                ({{selectedEntities.size}})
             </button>
         </div>
 
         {{!-- Step 2: Generate Prompt --}}
         {{#if (eq progress.status "extracted")}}
         <div class="workflow-step">
-            <h4>2. Generate Translation Prompt</h4>
+            <h4>{{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.Step2"}}</h4>
             <button type="button" class="generate-prompt">
-                <i class="fas fa-magic"></i> Generate Prompt
+                <i class="fas fa-magic"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.GeneratePrompt"}}
             </button>
         </div>
         {{/if}}
@@ -86,20 +93,21 @@
         {{!-- Step 3: Copy & Paste --}}
         {{#if generatedPrompt}}
         <div class="workflow-step">
-            <h4>3. Copy to AI</h4>
+            <h4>{{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.Step3"}}</h4>
             <div class="prompt-preview">
                 <textarea readonly rows="8">{{generatedPrompt}}</textarea>
             </div>
             <button type="button" class="copy-prompt">
-                <i class="fas fa-copy"></i> Copy Prompt
+                <i class="fas fa-copy"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.CopyPrompt"}}
             </button>
         </div>
 
         <div class="workflow-step">
-            <h4>4. Paste AI Response</h4>
-            <textarea name="ai-response" rows="8" placeholder="Paste the AI's JSON response here..."></textarea>
+            <h4>{{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.Step4"}}</h4>
+            <textarea name="ai-response" rows="8" placeholder="{{localize "
+                COMPENDIUM_TRANSLATOR.UI.Workflow.PastePlaceholder"}}"></textarea>
             <button type="button" class="process-response">
-                <i class="fas fa-cog"></i> Process Response
+                <i class="fas fa-cog"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.ProcessResponse"}}
             </button>
         </div>
         {{/if}}
@@ -107,19 +115,19 @@
         {{!-- Step 5: Spell-check (Optional) --}}
         {{#if (eq progress.status "ready-to-apply")}}
         <div class="workflow-step">
-            <h4>5. Quality Check (Optional)</h4>
+            <h4>{{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.Step5"}}</h4>
             <button type="button" class="generate-spellcheck">
-                <i class="fas fa-spell-check"></i> Generate Spell-Check Prompt
+                <i class="fas fa-spell-check"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.GenerateSpellcheck"}}
             </button>
         </div>
 
         {{!-- Step 6: Apply --}}
         <div class="workflow-step">
-            <h4>6. Apply Translation</h4>
-            <p class="warning-text"><i class="fas fa-exclamation-triangle"></i> This will modify entities directly.
-                Backups will be saved.</p>
+            <h4>{{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.Step6"}}</h4>
+            <p class="warning-text"><i class="fas fa-exclamation-triangle"></i> {{localize
+                "COMPENDIUM_TRANSLATOR.Warnings.BackupWarning"}}</p>
             <button type="button" class="apply-translation">
-                <i class="fas fa-check"></i> Apply to Entities
+                <i class="fas fa-check"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.Workflow.ApplyToEntities"}}
             </button>
         </div>
         {{/if}}
@@ -135,7 +143,7 @@
     {{!-- Success Message --}}
     {{#if (eq progress.status "complete")}}
     <div class="success-section">
-        <p><i class="fas fa-check-circle"></i> Translation applied successfully!</p>
+        <p><i class="fas fa-check-circle"></i> {{localize "COMPENDIUM_TRANSLATOR.UI.Success.TranslationApplied"}}</p>
     </div>
     {{/if}}
 </form>
